@@ -1,10 +1,10 @@
 ﻿using System;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using K9.WebApplication.Enums;
-using K9.WebApplication.Options;
+using K9.Base.WebApplication.Enums;
+using K9.Base.WebApplication.Options;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlHelpers
 	{

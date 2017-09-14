@@ -1,6 +1,6 @@
 ﻿using System.Collections.Generic;
 
-namespace K9.WebApplication.Models
+namespace K9.Base.WebApplication.Models
 {
 	public class ServiceResult
 	{

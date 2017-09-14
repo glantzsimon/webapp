@@ -5,7 +5,7 @@ using K9.Globalisation;
 using K9.SharedLibrary.Authentication;
 using WebMatrix.WebData;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlHelpers
 	{

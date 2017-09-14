@@ -2,10 +2,10 @@
 using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
+using K9.Base.WebApplication.Helpers;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Helpers;
 
-namespace K9.WebApplication.Options
+namespace K9.Base.WebApplication.Options
 {
 	public interface IDataTableOptions
 	{

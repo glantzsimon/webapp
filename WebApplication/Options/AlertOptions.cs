@@ -1,7 +1,7 @@
 ﻿
-using K9.WebApplication.Enums;
+using K9.Base.WebApplication.Enums;
 
-namespace K9.WebApplication.Options
+namespace K9.Base.WebApplication.Options
 {
 	public class AlertOptions
 	{

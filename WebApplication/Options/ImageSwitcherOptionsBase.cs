@@ -3,11 +3,11 @@ using System.ComponentModel;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
+using K9.Base.WebApplication.Enums;
 using K9.SharedLibrary.Helpers;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Enums;
 
-namespace K9.WebApplication.Options
+namespace K9.Base.WebApplication.Options
 {
 
 	public abstract class ImageSwitcherOptionsBase

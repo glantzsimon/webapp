@@ -3,7 +3,7 @@ using System.Globalization;
 using System.Threading;
 using System.Web.Mvc;
 
-namespace K9.WebApplication.Filters
+namespace K9.Base.WebApplication.Filters
 {
 	public class CultureAttribute : ActionFilterAttribute
 	{

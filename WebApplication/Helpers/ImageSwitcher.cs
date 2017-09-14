@@ -1,8 +1,8 @@
 ﻿using System.Web.Mvc;
 using System.Web.Mvc.Html;
-using K9.WebApplication.Options;
+using K9.Base.WebApplication.Options;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlExtensions
 	{

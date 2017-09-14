@@ -1,9 +1,8 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using K9.SharedLibrary.Models;
 
-namespace K9.WebApplication.DataSets
+namespace K9.Base.WebApplication.DataSets
 {
 
 	public class DataSets : IDataSets

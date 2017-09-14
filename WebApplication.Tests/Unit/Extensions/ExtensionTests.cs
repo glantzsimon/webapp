@@ -1,5 +1,5 @@
-﻿using K9.WebApplication.Controllers;
-using K9.WebApplication.Extensions;
+﻿using K9.Base.WebApplication.Controllers;
+using K9.Base.WebApplication.Extensions;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit.Extensions

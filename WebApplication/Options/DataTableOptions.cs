@@ -6,13 +6,13 @@ using System.Reflection;
 using System.Web.Mvc;
 using System.Web.Routing;
 using System.Web.Script.Serialization;
+using K9.Base.WebApplication.Exceptions;
+using K9.Base.WebApplication.Extensions;
+using K9.Base.WebApplication.Helpers;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Exceptions;
-using K9.WebApplication.Extensions;
-using K9.WebApplication.Helpers;
 
-namespace K9.WebApplication.Options
+namespace K9.Base.WebApplication.Options
 {
 	public class DataTableOptions<T> : IDataTableOptions where T : IObjectBase
 	{

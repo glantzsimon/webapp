@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Globalization;
 using System.Threading;
-using K9.WebApplication.Extensions;
+using K9.Base.WebApplication.Extensions;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit.Extensions

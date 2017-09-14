@@ -1,9 +1,9 @@
-﻿using K9.SharedLibrary.Helpers;
+﻿using K9.Base.WebApplication.Helpers;
+using K9.SharedLibrary.Helpers;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Helpers;
 using NLog;
 
-namespace K9.WebApplication.UnitsOfWork
+namespace K9.Base.WebApplication.UnitsOfWork
 {
 	public interface IControllerPackage<T>
 		where T : class, IObjectBase

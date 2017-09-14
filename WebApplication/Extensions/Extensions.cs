@@ -1,11 +1,10 @@
-﻿
-using System;
+﻿using System;
 using System.Reflection;
 using K9.DataAccessLayer.Attributes;
 using K9.Globalisation;
 using K9.SharedLibrary.Extensions;
 
-namespace K9.WebApplication.Extensions
+namespace K9.Base.WebApplication.Extensions
 {
 	public static class Extensions
 	{

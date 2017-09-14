@@ -2,7 +2,7 @@
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlHelpers
 	{

@@ -2,13 +2,13 @@
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using K9.Base.WebApplication.Constants;
+using K9.Base.WebApplication.Constants.Html;
+using K9.Base.WebApplication.Enums;
 using K9.Globalisation;
 using K9.SharedLibrary.Extensions;
-using K9.WebApplication.Constants;
-using K9.WebApplication.Constants.Html;
-using K9.WebApplication.Enums;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlHelpers
 	{

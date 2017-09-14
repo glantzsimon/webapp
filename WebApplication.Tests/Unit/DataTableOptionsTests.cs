@@ -1,10 +1,10 @@
 ﻿using K9.DataAccessLayer.Config;
 using K9.DataAccessLayer.Models;
-using K9.WebApplication.Exceptions;
-using K9.WebApplication.Options;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using K9.Base.WebApplication.Exceptions;
+using K9.Base.WebApplication.Options;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit

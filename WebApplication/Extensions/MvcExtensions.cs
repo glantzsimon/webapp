@@ -1,12 +1,11 @@
-﻿
-using System;
+﻿using System;
 using System.Linq;
 using System.Web.Mvc;
 using K9.Globalisation;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Models;
 
-namespace K9.WebApplication.Extensions
+namespace K9.Base.WebApplication.Extensions
 {
 	public static class MvcExtensions
 	{

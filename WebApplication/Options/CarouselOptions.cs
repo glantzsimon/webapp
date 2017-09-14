@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using K9.Base.WebApplication.Enums;
 using K9.SharedLibrary.Helpers;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Enums;
 
-namespace K9.WebApplication.Options
+namespace K9.Base.WebApplication.Options
 {
 
 	public class CarouselOptions

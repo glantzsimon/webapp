@@ -1,8 +1,7 @@
-﻿
-using System;
+﻿using System;
 using K9.Globalisation;
 
-namespace K9.WebApplication.Extensions
+namespace K9.Base.WebApplication.Extensions
 {
     public static class DateTimeExtensions
     {

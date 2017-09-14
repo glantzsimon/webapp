@@ -1,12 +1,11 @@
-﻿
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
+using K9.Base.WebApplication.Extensions;
+using K9.Base.WebApplication.Models;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Extensions;
-using K9.WebApplication.Models;
 
-namespace K9.WebApplication.ViewModels
+namespace K9.Base.WebApplication.ViewModels
 {
 	public class MultiSelectViewModel
 	{

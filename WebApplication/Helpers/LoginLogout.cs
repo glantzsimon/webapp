@@ -1,12 +1,12 @@
 ﻿using System.Text;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using K9.Base.WebApplication.Constants.Html;
+using K9.Base.WebApplication.Extensions;
 using K9.Globalisation;
-using K9.WebApplication.Constants.Html;
-using K9.WebApplication.Extensions;
 using WebMatrix.WebData;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlHelpers
 	{

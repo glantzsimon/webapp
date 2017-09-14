@@ -5,14 +5,14 @@ using System.Linq.Expressions;
 using System.Text;
 using System.Web.Mvc;
 using System.Web.Mvc.Html;
+using K9.Base.WebApplication.Constants;
+using K9.Base.WebApplication.Constants.Html;
+using K9.Base.WebApplication.Enums;
+using K9.Base.WebApplication.Options;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Constants;
-using K9.WebApplication.Constants.Html;
-using K9.WebApplication.Enums;
-using K9.WebApplication.Options;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlHelpers
 	{

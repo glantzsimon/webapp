@@ -1,5 +1,5 @@
 ﻿
-namespace K9.WebApplication.Constants
+namespace K9.Base.WebApplication.Constants
 {
 	public class SiteConstants
 	{

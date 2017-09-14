@@ -3,8 +3,8 @@ using System.Globalization;
 using System.Linq;
 using System.Threading;
 using System.Web.Mvc;
+using K9.Base.WebApplication.Extensions;
 using K9.DataAccessLayer.Models;
-using K9.WebApplication.Extensions;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit

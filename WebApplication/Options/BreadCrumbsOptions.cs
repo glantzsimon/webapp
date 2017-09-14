@@ -1,10 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using K9.Base.WebApplication.Models;
 using K9.Globalisation;
-using K9.WebApplication.Models;
 
-namespace K9.WebApplication.Options
+namespace K9.Base.WebApplication.Options
 {
 	public class BreadCrumbsOptions
 	{

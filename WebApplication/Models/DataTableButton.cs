@@ -1,7 +1,7 @@
-﻿using K9.SharedLibrary.Models;
-using K9.WebApplication.Constants;
+﻿using K9.Base.WebApplication.Constants;
+using K9.SharedLibrary.Models;
 
-namespace K9.WebApplication.Models
+namespace K9.Base.WebApplication.Models
 {
 	public class Button : IButton
 	{

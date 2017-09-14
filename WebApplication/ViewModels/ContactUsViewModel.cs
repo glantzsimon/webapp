@@ -1,9 +1,7 @@
-﻿
-
-using System.ComponentModel.DataAnnotations;
+﻿using System.ComponentModel.DataAnnotations;
 using K9.Globalisation;
 
-namespace K9.WebApplication.ViewModels
+namespace K9.Base.WebApplication.ViewModels
 {
 	public class ContactUsViewModel
 	{

@@ -1,7 +1,7 @@
-﻿using K9.DataAccessLayer.Models;
+﻿using K9.Base.WebApplication.Enums;
+using K9.Base.WebApplication.Helpers;
+using K9.DataAccessLayer.Models;
 using K9.SharedLibrary.Helpers;
-using K9.WebApplication.Enums;
-using K9.WebApplication.Helpers;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit.Helpers

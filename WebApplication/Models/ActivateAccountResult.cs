@@ -1,7 +1,7 @@
-﻿using K9.DataAccessLayer.Models;
-using K9.WebApplication.Enums;
+﻿using K9.Base.WebApplication.Enums;
+using K9.DataAccessLayer.Models;
 
-namespace K9.WebApplication.Models
+namespace K9.Base.WebApplication.Models
 {
 	public class ActivateAccountResult
 	{

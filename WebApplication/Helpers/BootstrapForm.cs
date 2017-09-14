@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Web.Mvc;
-using K9.WebApplication.Constants;
-using K9.WebApplication.Constants.Html;
+using K9.Base.WebApplication.Constants;
+using K9.Base.WebApplication.Constants.Html;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public static partial class HtmlHelpers
 	{

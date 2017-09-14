@@ -1,5 +1,5 @@
 ﻿
-namespace K9.WebApplication.Enums
+namespace K9.Base.WebApplication.Enums
 {
 	public enum EActivateAccountResult
 	{

@@ -1,5 +1,5 @@
 ﻿
-namespace K9.WebApplication.Models
+namespace K9.Base.WebApplication.Models
 {
 	public class ServiceError
 	{

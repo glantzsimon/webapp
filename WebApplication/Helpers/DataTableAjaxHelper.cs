@@ -1,18 +1,17 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Reflection;
 using System.Text;
 using System.Text.RegularExpressions;
+using K9.Base.WebApplication.Exceptions;
 using K9.SharedLibrary.Attributes;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Models;
-using K9.WebApplication.Exceptions;
 using NLog;
 
-namespace K9.WebApplication.Helpers
+namespace K9.Base.WebApplication.Helpers
 {
 	public class DataTableAjaxHelper<T> : IDataTableAjaxHelper<T> where T : class
 	{

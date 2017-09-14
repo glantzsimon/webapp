@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
@@ -8,7 +7,7 @@ using K9.DataAccessLayer.Extensions;
 using K9.DataAccessLayer.Respositories;
 using K9.SharedLibrary.Models;
 
-namespace K9.WebApplication.DataSets
+namespace K9.Base.WebApplication.DataSets
 {
 
 	public class DataSetsHelper : IDataSetsHelper

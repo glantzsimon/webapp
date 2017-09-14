@@ -7,7 +7,7 @@ using K9.SharedLibrary.Authentication;
 using K9.SharedLibrary.Models;
 using WebMatrix.WebData;
 
-namespace K9.WebApplication.Filters
+namespace K9.Base.WebApplication.Filters
 {
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Property | AttributeTargets.Method )]
 	[DefaultProperty("Permission")]
