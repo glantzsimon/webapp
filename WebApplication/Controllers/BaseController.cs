@@ -13,7 +13,7 @@ using K9.Base.WebApplication.Helpers;
 using K9.Base.WebApplication.Models;
 using K9.Base.WebApplication.UnitsOfWork;
 using K9.Base.WebApplication.ViewModels;
-using K9.Globalisation;
+using K9.Base.Globalisation;
 using K9.SharedLibrary.Authentication;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Helpers;
@@ -26,23 +26,16 @@ namespace K9.Base.WebApplication.Controllers
 {
     public abstract class BaseController : Controller, IBaseController
     {
-        private readonly ILogger _logger;
-        private readonly IDataSetsHelper _dataSetsHelper;
-        private readonly IRoles _roles;
-
-        public IDataSetsHelper DropdownDataSets => _dataSetsHelper;
-
-        public IRoles Roles => _roles;
-
-        public ILogger Logger => _logger;
-
+        public IDataSetsHelper DropdownDataSets { get; }
+        public IRoles Roles { get; }
+        public ILogger Logger { get; }
         public abstract string GetObjectName();
 
-        public BaseController(ILogger logger, IDataSetsHelper dataSetsHelper, IRoles roles)
+        protected BaseController(ILogger logger, IDataSetsHelper dataSetsHelper, IRoles roles)
         {
-            _logger = logger;
-            _dataSetsHelper = dataSetsHelper;
-            _roles = roles;
+            Logger = logger;
+            DropdownDataSets = dataSetsHelper;
+            Roles = roles;
         }
     }
 
@@ -110,10 +103,7 @@ namespace K9.Base.WebApplication.Controllers
 
         protected override void Dispose(bool disposing)
         {
-            if (Repository != null)
-            {
-                Repository.Dispose();
-            }
+            Repository?.Dispose();
             base.Dispose(disposing);
         }
 
@@ -138,7 +128,7 @@ namespace K9.Base.WebApplication.Controllers
         {
             SetTitle();
             ViewBag.Subtitle = $"{typeof(T).GetPluralName()}{GetStatelessFilterTitle()}"; ;
-            return View("Index");
+            return View();
         }
 
         [RequirePermissions(Permission = Permissions.View)]

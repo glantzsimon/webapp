@@ -2,7 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using K9.Base.WebApplication.Models;
-using K9.Globalisation;
+using K9.Base.Globalisation;
 
 namespace K9.Base.WebApplication.Options
 {

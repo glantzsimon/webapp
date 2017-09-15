@@ -1,7 +1,7 @@
 ﻿using System.Text;
 using System.Web.Mvc;
 using K9.Base.DataAccessLayer.Models;
-using K9.Globalisation;
+using K9.Base.Globalisation;
 using K9.SharedLibrary.Authentication;
 using WebMatrix.WebData;
 

@@ -1,5 +1,5 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using K9.Globalisation;
+using K9.Base.Globalisation;
 
 namespace K9.Base.WebApplication.ViewModels
 {

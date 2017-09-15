@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using System.Web.Mvc.Html;
 using K9.Base.WebApplication.Constants.Html;
 using K9.Base.WebApplication.Extensions;
-using K9.Globalisation;
+using K9.Base.Globalisation;
 using WebMatrix.WebData;
 
 namespace K9.Base.WebApplication.Helpers

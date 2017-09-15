@@ -5,7 +5,7 @@ using System.Web.Routing;
 using K9.Base.WebApplication.Constants;
 using K9.Base.WebApplication.Constants.Html;
 using K9.Base.WebApplication.Enums;
-using K9.Globalisation;
+using K9.Base.Globalisation;
 using K9.SharedLibrary.Extensions;
 
 namespace K9.Base.WebApplication.Helpers
