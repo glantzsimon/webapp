@@ -5,7 +5,7 @@ using NLog;
 
 namespace K9.Base.WebApplication.UnitsOfWork
 {
-	public interface IControllerPackage<T>
+    public interface IControllerPackage<T>
 		where T : class, IObjectBase
 	{
 		IRepository<T> Repository { get; set; }

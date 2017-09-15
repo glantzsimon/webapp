@@ -21,7 +21,7 @@ namespace K9.Base.WebApplication.Filters
 		{
 			var controller = filterContext.Controller as IBaseController;
 			var roles = controller.Roles;
-			
+            
 			// Check controller level roles first
 			var controllerPermissionAttribute =
 				controller.GetType().GetCustomAttributes(typeof(RequirePermissionsAttribute), true).FirstOrDefault() as RequirePermissionsAttribute;
