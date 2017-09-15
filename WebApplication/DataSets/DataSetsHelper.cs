@@ -3,8 +3,8 @@ using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using K9.DataAccessLayer.Extensions;
-using K9.DataAccessLayer.Respositories;
+using K9.Base.DataAccessLayer.Extensions;
+using K9.Base.DataAccessLayer.Respositories;
 using K9.SharedLibrary.Models;
 
 namespace K9.Base.WebApplication.DataSets

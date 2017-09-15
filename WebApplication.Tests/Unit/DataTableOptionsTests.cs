@@ -1,8 +1,8 @@
-﻿using K9.DataAccessLayer.Config;
-using K9.DataAccessLayer.Models;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using K9.Base.DataAccessLayer.Config;
+using K9.Base.DataAccessLayer.Models;
 using K9.Base.WebApplication.Exceptions;
 using K9.Base.WebApplication.Options;
 using Xunit;

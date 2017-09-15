@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
+using K9.Base.DataAccessLayer.Config;
+using K9.Base.DataAccessLayer.Models;
 using K9.Base.WebApplication.Exceptions;
 using K9.Base.WebApplication.Helpers;
-using K9.DataAccessLayer.Config;
-using K9.DataAccessLayer.Models;
 using K9.SharedLibrary.Extensions;
 using Moq;
 using NLog;

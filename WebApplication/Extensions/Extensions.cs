@@ -1,6 +1,6 @@
 ﻿using System;
 using System.Reflection;
-using K9.DataAccessLayer.Attributes;
+using K9.Base.DataAccessLayer.Attributes;
 using K9.Globalisation;
 using K9.SharedLibrary.Extensions;
 

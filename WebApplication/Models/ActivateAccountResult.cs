@@ -1,5 +1,5 @@
-﻿using K9.Base.WebApplication.Enums;
-using K9.DataAccessLayer.Models;
+﻿using K9.Base.DataAccessLayer.Models;
+using K9.Base.WebApplication.Enums;
 
 namespace K9.Base.WebApplication.Models
 {

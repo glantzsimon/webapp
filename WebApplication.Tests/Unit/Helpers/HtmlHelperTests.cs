@@ -1,4 +1,4 @@
-﻿using K9.DataAccessLayer.Models;
+﻿using K9.Base.DataAccessLayer.Models;
 using Xunit;
 using HtmlHelper = K9.SharedLibrary.Helpers.HtmlHelper;
 

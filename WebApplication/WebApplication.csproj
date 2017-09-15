@@ -48,11 +48,11 @@
     <Reference Include="FoolproofValidation, Version=0.9.5851.39121, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Foolproof.0.9.4518\lib\net45\FoolproofValidation.dll</HintPath>
     </Reference>
-    <Reference Include="K9.DataAccessLayer, Version=1.0.0.10, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\K9.DataAccessLayer.1.0.0.10\lib\net461\K9.DataAccessLayer.dll</HintPath>
+    <Reference Include="K9.Base.DataAccessLayer">
+      <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.38\lib\net461\K9.Base.DataAccessLayer.dll</HintPath>
     </Reference>
-    <Reference Include="K9.Globalisation, Version=1.0.0.10, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\K9.Globalisation.1.0.0.10\lib\net461\K9.Globalisation.dll</HintPath>
+    <Reference Include="K9.Globalisation, Version=1.0.0.3, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\K9.Globalisation.1.0.0.3\lib\net461\K9.Globalisation.dll</HintPath>
     </Reference>
     <Reference Include="K9.SharedLibrary, Version=1.0.0.18, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\K9.SharedLibrary.18.0.0\lib\net461\K9.SharedLibrary.dll</HintPath>
@@ -70,6 +70,9 @@
       <HintPath>..\packages\NLog.4.4.12\lib\net45\NLog.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Collections.Specialized">
+      <HintPath>..\packages\System.Collections.Specialized.4.3.0\lib\net46\System.Collections.Specialized.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Annotations, Version=4.2.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
       <HintPath>..\packages\System.ComponentModel.Annotations.4.4.0\lib\net461\System.ComponentModel.Annotations.dll</HintPath>
     </Reference>
