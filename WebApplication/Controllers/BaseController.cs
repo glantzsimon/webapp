@@ -147,7 +147,7 @@ namespace K9.Base.WebApplication.Controllers
                 return HttpNotFound();
             }
 
-            if (!CheckLimitByUser(item))
+            if (!IsCurrentUserPermittedToViewOtherUsersData(item))
             {
                 return HttpForbidden();
             }
@@ -175,8 +175,8 @@ namespace K9.Base.WebApplication.Controllers
 
             try
             {
-                var recordsTotal = Repository.GetCount(GetLimitByUserWhereClause());
-                var limitByUserId = LimitByUser() ? Authentication.CurrentUserId : (int?)null;
+                var recordsTotal = Repository.GetCount(GetFilterByUserIdWhereClause());
+                var limitByUserId = FilterDataByUserId() ? Authentication.CurrentUserId : (int?)null;
                 var recordsFiltered = Repository.GetCount(AjaxHelper.GetWhereClause(true, limitByUserId));
                 var data = Repository.GetQuery(AjaxHelper.GetQuery(true, limitByUserId));
                 var json = JsonConvert.SerializeObject(new
@@ -297,7 +297,7 @@ namespace K9.Base.WebApplication.Controllers
                 return HttpNotFound();
             }
 
-            if (!CheckLimitByUser(item))
+            if (!IsCurrentUserPermittedToViewOtherUsersData(item))
             {
                 return HttpForbidden();
             }
@@ -339,7 +339,7 @@ namespace K9.Base.WebApplication.Controllers
                         return HttpForbidden();
                     }
 
-                    if (!CheckLimitByUser(original))
+                    if (!IsCurrentUserPermittedToViewOtherUsersData(original))
                     {
                         return HttpForbidden();
                     }
@@ -398,7 +398,7 @@ namespace K9.Base.WebApplication.Controllers
                 return HttpForbidden();
             }
 
-            if (!CheckLimitByUser(item))
+            if (!IsCurrentUserPermittedToViewOtherUsersData(item))
             {
                 return HttpForbidden();
             }
@@ -437,7 +437,7 @@ namespace K9.Base.WebApplication.Controllers
                     return HttpForbidden();
                 }
 
-                if (!CheckLimitByUser(item))
+                if (!IsCurrentUserPermittedToViewOtherUsersData(item))
                 {
                     return HttpForbidden();
                 }
@@ -499,7 +499,7 @@ namespace K9.Base.WebApplication.Controllers
                 return HttpForbidden();
             }
 
-            if (!CheckLimitByUser(parent))
+            if (!IsCurrentUserPermittedToViewOtherUsersData(parent))
             {
                 return HttpForbidden();
             }
@@ -588,19 +588,19 @@ namespace K9.Base.WebApplication.Controllers
             return typeof(T).Name;
         }
 
-        private bool LimitByUser()
+        private bool FilterDataByUserId()
         {
             return GetType().LimitedByUser() && Authentication.IsAuthenticated && !Roles.CurrentUserIsInRoles(RoleNames.Administrators);
         }
 
-        private string GetLimitByUserWhereClause()
+        private string GetFilterByUserIdWhereClause()
         {
-            return LimitByUser() ? $" WHERE [UserId] = {Authentication.CurrentUserId}" : string.Empty;
+            return FilterDataByUserId() ? $" WHERE [UserId] = {Authentication.CurrentUserId}" : string.Empty;
         }
 
-        private bool CheckLimitByUser(IObjectBase item)
+        private bool IsCurrentUserPermittedToViewOtherUsersData(IObjectBase item)
         {
-            if (LimitByUser())
+            if (FilterDataByUserId())
             {
                 if (!typeof(T).ImplementsIUserData())
                 {
