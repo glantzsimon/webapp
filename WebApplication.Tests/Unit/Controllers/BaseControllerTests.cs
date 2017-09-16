@@ -270,7 +270,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             _ajaxHelper.Setup(_ => _.GetWhereClause(true, CurrentUserId))
                 .Returns(whereClause);
             _repository.Setup(_ => _.GetCount(whereClause))
-                .Returns(filteredCount)
+                .Returns(filteredCount);
 
             var contentResult = Assert.IsType<ContentResult>(_personController.List());
 
