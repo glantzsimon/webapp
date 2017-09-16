@@ -209,12 +209,6 @@ namespace K9.Base.WebApplication.Controllers
         public virtual ActionResult Create()
         {
             var itemToCreate = Activator.CreateInstance<T>();
-
-            if (typeof(T).ImplementsIUserData())
-            {
-                itemToCreate.SetProperty("UserId", Authentication.CurrentUserId);
-            }
-
             var statelessFilter = this.GetStatelessFilter();
 
             SetTitle();
@@ -223,6 +217,10 @@ namespace K9.Base.WebApplication.Controllers
             if (statelessFilter.IsSet())
             {
                 itemToCreate.SetProperty(statelessFilter.Key, statelessFilter.Id);
+            }
+            else if (typeof(T).ImplementsIUserData())
+            {
+                itemToCreate.SetProperty("UserId", Authentication.CurrentUserId);
             }
 
             AddControllerBreadcrumb();

@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using K9.Base.WebApplication.Controllers;
 using K9.Base.WebApplication.UnitsOfWork;
 using K9.SharedLibrary.Models;
@@ -18,6 +19,7 @@ using K9.Base.WebApplication.Helpers;
 using K9.Base.WebApplication.Models;
 using K9.SharedLibrary.Attributes;
 using K9.SharedLibrary.Authentication;
+using K9.SharedLibrary.Extensions;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit.Controllers
@@ -26,6 +28,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
     {
         public static readonly Mock<HttpResponseBase> MockHttpResponse = new Mock<HttpResponseBase>();
         public static readonly Mock<ControllerContext> MockControllerContext = new Mock<ControllerContext>();
+        public const int FilteredUserId = 2;
 
         public class MockController<T> : BaseController<T> 
             where T : class , IObjectBase
@@ -50,7 +53,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                     .Returns(new NameValueCollection
                 {
                     { "fkName", "UserId" },
-                    { "fkValue", "2" }
+                    { "fkValue", $"{FilteredUserId}" }
                 });
                 MockControllerContext.SetupGet(_ => _.HttpContext.User.Identity.IsAuthenticated)
                     .Returns(true);
@@ -116,6 +119,24 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                 .Returns(_roles.Object);
         }
 
+        private void SetupRepository<T>(Mock<IRepository<T>> repository)
+            where T : class, IObjectBase
+        {
+            var validEntity = Activator.CreateInstance<T>();
+            validEntity.SetProperty("Id", ValidId);
+            validEntity.SetProperty("Name", "John");
+            validEntity.SetProperty("UserId", ValidUserId);
+
+            repository.Setup(_ => _.GetName(It.IsAny<string>(), It.IsAny<int>()))
+                .Returns("Gizzie");
+            repository.Setup(_ => _.Find(InvalidId))
+                .Returns((T)null);
+            repository.Setup(_ => _.Find(ValidId))
+                .Returns(validEntity);
+            repository.Setup(_ => _.Find(ValidId))
+                .Returns(validEntity);
+        }
+
         public BaseControllerTests()
         {
             Thread.CurrentThread.CurrentUICulture = new CultureInfo("gb");
@@ -135,24 +156,8 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             _limitedPackage.SetupGet(_ => _.Repository)
                 .Returns(_limitedRepository.Object);
 
-            _repository.Setup(_ => _.GetName(It.IsAny<string>(), It.IsAny<int>()))
-                .Returns("Gizzie");
-            _repository.Setup(_ => _.Find(InvalidId))
-                .Returns((Person)null);
-            _repository.Setup(_ => _.Find(ValidId))
-                .Returns(new Person
-                {
-                    Id = ValidId,
-                    Name = "John",
-                    UserId = ValidUserId
-                });
-            _limitedRepository.Setup(_ => _.Find(ValidId))
-                .Returns(new PersonWithIUserData
-                {
-                    Id = ValidId,
-                    Name = "John",
-                    UserId = ValidUserId
-                });
+            SetupRepository(_repository);
+            SetupRepository(_limitedRepository);
         }
 
         [Fact]
@@ -277,8 +282,20 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Contains("\"draw\":0", contentResult.Content);
             Assert.Contains($"\"recordsTotal\":{count}", contentResult.Content);
             Assert.Contains($"\"recordsFiltered\":{filteredCount}", contentResult.Content);
+            Assert.Contains($"\"Id\":{personsList.Last().Id}", contentResult.Content);
         }
 
+        [Fact]
+        public void Create_ShouldUpateUserId_IfStatelessFilterIsSet()
+        {
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Create());
+            var model = viewResult.Model as PersonWithIUserData;
+
+            Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
+            Assert.Equal("Create New PersonWithIUserData for Gizzie", _limitedController.ViewBag.SubTitle);
+
+            Assert.Equal(FilteredUserId, model.UserId);
+        }
 
     }
 
