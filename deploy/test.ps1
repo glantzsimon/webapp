@@ -1,4 +1,4 @@
-$testFile = ".\WebApp\WebApplication.Tests\bin\Release\K9.WebApplication.Tests.dll"
+$testFile = ".\WebApplication.Tests\bin\Release\K9.WebApplication.Tests.dll"
 	
 function ProcessErrors(){
   if($? -eq $false)

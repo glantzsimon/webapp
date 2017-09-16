@@ -1,10 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Net;
-using System.Threading;
-using System.Web.Mvc;
-using K9.Base.DataAccessLayer.Models;
+﻿using K9.Base.DataAccessLayer.Models;
+using K9.Base.Globalisation;
 using K9.Base.WebApplication.EventArgs;
 using K9.Base.WebApplication.Exceptions;
 using K9.Base.WebApplication.Extensions;
@@ -13,15 +8,18 @@ using K9.Base.WebApplication.Helpers;
 using K9.Base.WebApplication.Models;
 using K9.Base.WebApplication.UnitsOfWork;
 using K9.Base.WebApplication.ViewModels;
-using K9.Base.Globalisation;
-using K9.Base.WebApplication.Services;
 using K9.SharedLibrary.Authentication;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Helpers;
 using K9.SharedLibrary.Models;
 using Newtonsoft.Json;
 using NLog;
-using WebMatrix.WebData;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Net;
+using System.Threading;
+using System.Web.Mvc;
 
 namespace K9.Base.WebApplication.Controllers
 {
