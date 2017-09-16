@@ -1,46 +1,47 @@
-﻿using System;
-using System.Linq;
-using System.Web;
-using System.Web.Mvc;
-using System.Web.Security;
-using K9.Base.DataAccessLayer.Models;
+﻿using K9.Base.DataAccessLayer.Models;
 using K9.Base.Globalisation;
 using K9.Base.WebApplication.Config;
 using K9.Base.WebApplication.Enums;
 using K9.Base.WebApplication.Models;
-using K9.SharedLibrary.Authentication;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Helpers;
 using K9.SharedLibrary.Models;
 using NLog;
-using WebMatrix.WebData;
+using System;
+using System.Linq;
+using System.Web;
+using System.Web.Mvc;
+using System.Web.Security;
+using K9.SharedLibrary.Authentication;
 
 namespace K9.Base.WebApplication.Services
 {
-	public class AccountService : IAccountService
+    public class AccountService : IAccountService
 	{
 		private readonly IRepository<User> _userRepository;
 		private readonly IMailer _mailer;
-		private readonly ILogger _logger;
+	    private readonly IAuthentication _authentication;
+	    private readonly ILogger _logger;
 		private readonly WebsiteConfiguration _config;
 		private readonly UrlHelper _urlHelper;
 
-		public AccountService(IRepository<User> userRepository, IOptions<WebsiteConfiguration> config, IMailer mailer, ILogger logger)
+		public AccountService(IRepository<User> userRepository, IOptions<WebsiteConfiguration> config, IMailer mailer, IAuthentication authentication, ILogger logger)
 		{
 			_userRepository = userRepository;
 			_mailer = mailer;
-			_logger = logger;
+		    _authentication = authentication;
+		    _logger = logger;
 			_config = config.Value;
 			_urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
 		}
         
 	    public ELoginResult Login(string username, string password, bool isRemember)
 		{
-			if (WebSecurity.Login(username, password, isRemember))
+			if (_authentication.Login(username, password, isRemember))
 			{
 				return ELoginResult.Success;
 			}
-			if (WebSecurity.IsAccountLockedOut(username, 10, TimeSpan.FromDays(1)))
+			if (_authentication.IsAccountLockedOut(username, 10, TimeSpan.FromDays(1)))
 			{
 				return ELoginResult.AccountLocked;
 			}
@@ -80,7 +81,7 @@ namespace K9.Base.WebApplication.Services
 			{
 				try
 				{
-					var token = WebSecurity.CreateUserAndAccount(model.UserName, model.Password,
+					var token = _authentication.CreateUserAndAccount(model.UserName, model.Password,
 						new
 						{
 							model.EmailAddress,
@@ -126,7 +127,7 @@ namespace K9.Base.WebApplication.Services
 			var result = new ServiceResult();
 			try
 			{
-				if (WebSecurity.ChangePassword(WebSecurity.CurrentUserName, model.OldPassword, model.NewPassword))
+				if (_authentication.ChangePassword(_authentication.CurrentUserName, model.OldPassword, model.NewPassword))
 				{
 					result.IsSuccess = true;	
 				}
@@ -161,7 +162,7 @@ namespace K9.Base.WebApplication.Services
 				try
 				{
 					model.UserName = user.Username;
-					var token = WebSecurity.GeneratePasswordResetToken(user.Username);
+					var token = _authentication.GeneratePasswordResetToken(user.Username);
 					SendPasswordResetEmail(model, token);
 					result.IsSuccess = true;
 					result.Data = token;
@@ -177,8 +178,8 @@ namespace K9.Base.WebApplication.Services
 
 		public bool ConfirmUserFromToken(string username, string token)
 		{
-			var userId = WebSecurity.GetUserIdFromPasswordResetToken(token);
-			var confirmUserId = WebSecurity.GetUserId(username);
+			var userId = _authentication.GetUserIdFromPasswordResetToken(token);
+			var confirmUserId = _authentication.GetUserId(username);
 			return userId == confirmUserId;
 		}
 
@@ -188,8 +189,8 @@ namespace K9.Base.WebApplication.Services
 
 			try
 			{
-				WebSecurity.ResetPassword(model.Token, model.NewPassword);
-				WebSecurity.Login(model.UserName, model.NewPassword);
+				_authentication.ResetPassword(model.Token, model.NewPassword);
+				_authentication.Login(model.UserName, model.NewPassword);
 				result.IsSuccess = true;
 			}
 			catch (Exception ex)
@@ -239,7 +240,7 @@ namespace K9.Base.WebApplication.Services
 
 			if (user != null)
 			{
-				if (WebSecurity.IsConfirmed(user.Username))
+				if (_authentication.IsConfirmed(user.Username))
 				{
 					_logger.Error("Account already activated for user '{0}'.", user.Username);
 					result.Result = EActivateAccountResult.AlreadyActivated;
@@ -250,7 +251,7 @@ namespace K9.Base.WebApplication.Services
 				{
 					token = GetAccountActivationToken(user.Id);
 				}
-				if (!WebSecurity.ConfirmAccount(user.Username, token))
+				if (!_authentication.ConfirmAccount(user.Username, token))
 				{
 					_logger.Error("ActivateAccount failed as user '{0}' was not found.", user.Username);
 					result.Result = EActivateAccountResult.Fail;
@@ -266,7 +267,7 @@ namespace K9.Base.WebApplication.Services
 
 		public void Logout()
 		{
-			WebSecurity.Logout();
+			_authentication.Logout();
 		}
 
 		public string GetAccountActivationToken(int userId)

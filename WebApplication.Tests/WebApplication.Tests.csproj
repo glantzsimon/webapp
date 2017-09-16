@@ -57,14 +57,14 @@
     <Reference Include="FoolproofValidation, Version=0.9.5851.39121, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Foolproof.0.9.4518\lib\net45\FoolproofValidation.dll</HintPath>
     </Reference>
-    <Reference Include="K9.Base.DataAccessLayer, Version=1.0.0.38, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.38\lib\net461\K9.Base.DataAccessLayer.dll</HintPath>
+    <Reference Include="K9.Base.DataAccessLayer, Version=1.0.0.45, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.45\lib\net461\K9.Base.DataAccessLayer.dll</HintPath>
     </Reference>
     <Reference Include="K9.Base.Globalisation, Version=1.0.0.18, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\K9.Base.Globalisation.1.0.0.18\lib\net461\K9.Base.Globalisation.dll</HintPath>
     </Reference>
-    <Reference Include="K9.SharedLibrary, Version=1.0.0.18, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\K9.SharedLibrary.18.0.0\lib\net461\K9.SharedLibrary.dll</HintPath>
+    <Reference Include="K9.SharedLibrary, Version=1.0.0.41, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\K9.SharedLibrary.20.0.0.41\lib\net461\K9.SharedLibrary.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="Microsoft.VisualStudio.QualityTools.UnitTestFramework, Version=10.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL" />

@@ -30,13 +30,15 @@ namespace K9.Base.WebApplication.Controllers
         public IDataSetsHelper DropdownDataSets { get; }
         public IRoles Roles { get; }
         public ILogger Logger { get; }
+        public IAuthentication Authentication { get; }
         public abstract string GetObjectName();
 
-        protected BaseController(ILogger logger, IDataSetsHelper dataSetsHelper, IRoles roles)
+        protected BaseController(ILogger logger, IDataSetsHelper dataSetsHelper, IRoles roles, IAuthentication authentication)
         {
             Logger = logger;
             DropdownDataSets = dataSetsHelper;
             Roles = roles;
+            Authentication = authentication;
         }
     }
 
@@ -97,7 +99,7 @@ namespace K9.Base.WebApplication.Controllers
 
         public IFileSourceHelper FileSourceHelper => ControllerPackage.FileSourceHelper;
 
-      //  public IAuthentication AccountService => ControllerPackage.AccountService;
+        public IAuthentication Authentication => ControllerPackage.Authentication;
 
         #endregion
 
@@ -174,7 +176,7 @@ namespace K9.Base.WebApplication.Controllers
             try
             {
                 var recordsTotal = Repository.GetCount(GetLimitByUserWhereClause());
-                var limitByUserId = LimitByUser() ? WebSecurity.CurrentUserId : (int?)null;
+                var limitByUserId = LimitByUser() ? Authentication.CurrentUserId : (int?)null;
                 var recordsFiltered = Repository.GetCount(AjaxHelper.GetWhereClause(true, limitByUserId));
                 var data = Repository.GetQuery(AjaxHelper.GetQuery(true, limitByUserId));
                 var json = JsonConvert.SerializeObject(new
@@ -212,7 +214,7 @@ namespace K9.Base.WebApplication.Controllers
 
             if (typeof(T).ImplementsIUserData())
             {
-                itemToCreate.SetProperty("UserId", WebSecurity.CurrentUserId);
+                itemToCreate.SetProperty("UserId", Authentication.CurrentUserId);
             }
 
             var statelessFilter = this.GetStatelessFilter();
@@ -588,12 +590,12 @@ namespace K9.Base.WebApplication.Controllers
 
         private bool LimitByUser()
         {
-            return GetType().LimitedByUser() && WebSecurity.IsAuthenticated && !Roles.CurrentUserIsInRoles(RoleNames.Administrators);
+            return GetType().LimitedByUser() && Authentication.IsAuthenticated && !Roles.CurrentUserIsInRoles(RoleNames.Administrators);
         }
 
         private string GetLimitByUserWhereClause()
         {
-            return LimitByUser() ? $" WHERE [UserId] = {WebSecurity.CurrentUserId}" : string.Empty;
+            return LimitByUser() ? $" WHERE [UserId] = {Authentication.CurrentUserId}" : string.Empty;
         }
 
         private bool CheckLimitByUser(IObjectBase item)
@@ -604,7 +606,7 @@ namespace K9.Base.WebApplication.Controllers
                 {
                     throw new LimitByUserIdException();
                 }
-                if ((int)item.GetProperty("UserId") != WebSecurity.CurrentUserId)
+                if ((int)item.GetProperty("UserId") != Authentication.CurrentUserId)
                 {
                     return false;
                 }

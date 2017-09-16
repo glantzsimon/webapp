@@ -14,5 +14,6 @@ namespace K9.Base.WebApplication.UnitsOfWork
 		IDataSetsHelper DataSetsHelper { get; set; }
 		IRoles Roles { get; set; }
 		IFileSourceHelper FileSourceHelper { get; set; }
+	    IAuthentication Authentication { get; set; }
 	}
 }

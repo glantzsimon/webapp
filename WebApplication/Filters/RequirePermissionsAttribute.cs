@@ -16,21 +16,19 @@ namespace K9.Base.WebApplication.Filters
 
 		public string Permission { get; set; }
 		public string Role { get; set; }
-
+        
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
 			var controller = filterContext.Controller as IBaseController;
-			var roles = controller.Roles;
+			var roles = controller?.Roles;
+		    var authentication = controller?.Authentication;
             
 			// Check controller level roles first
-			var controllerPermissionAttribute =
-				controller.GetType().GetCustomAttributes(typeof(RequirePermissionsAttribute), true).FirstOrDefault() as RequirePermissionsAttribute;
-
-			if (controllerPermissionAttribute != null)
+		    if (controller?.GetType().GetCustomAttributes(typeof(RequirePermissionsAttribute), true).FirstOrDefault() is RequirePermissionsAttribute controllerPermissionAttribute)
 			{
 				if (!string.IsNullOrEmpty(controllerPermissionAttribute.Role))
 				{
-					if (!CheckRole(roles, controllerPermissionAttribute.Role))
+					if (!CheckRole(roles, controllerPermissionAttribute.Role, authentication))
 					{
 						HttpForbidden(filterContext);
 						return;
@@ -41,7 +39,7 @@ namespace K9.Base.WebApplication.Filters
 			if (!string.IsNullOrEmpty(Permission))
 			{
 				var fullyQualifiedPermissionName = $"{Permission}{controller.GetObjectName()}";
-				if (!CheckPermission(roles, fullyQualifiedPermissionName))
+				if (!CheckPermission(roles, fullyQualifiedPermissionName, authentication))
 				{
 					HttpForbidden(filterContext);
 					return;
@@ -50,7 +48,7 @@ namespace K9.Base.WebApplication.Filters
 
 			if (!string.IsNullOrEmpty(Role))
 			{
-				if (!CheckRole(roles, Role))
+				if (!CheckRole(roles, Role, authentication))
 				{
 					HttpForbidden(filterContext);
 				}
@@ -67,20 +65,20 @@ namespace K9.Base.WebApplication.Filters
 			};
 		}
 
-		private bool CheckPermission(IRoles roles, string permissionName)
+		private bool CheckPermission(IRoles roles, string permissionName, IAuthentication authentication)
 		{
 			var permissions = roles.GetPermissionsForCurrentUser().Select(r => r.Name).ToList();
-			if ((!WebSecurity.IsAuthenticated || !permissions.Contains(permissionName)) && !roles.CurrentUserIsInRoles(RoleNames.Administrators))
+			if ((!authentication.IsAuthenticated || !permissions.Contains(permissionName)) && !roles.CurrentUserIsInRoles(RoleNames.Administrators))
 			{
 				return false;
 			}
 			return true;
 		}
 
-		private bool CheckRole(IRoles roles, string roleName)
+		private bool CheckRole(IRoles roles, string roleName, IAuthentication authentication)
 		{
 			var userRoles = roles.GetRolesForCurrentUser().Select(r => r.Name).ToList();
-			if ((!WebSecurity.IsAuthenticated || !userRoles.Contains(roleName)) && !roles.CurrentUserIsInRoles(RoleNames.Administrators))
+			if ((!authentication.IsAuthenticated || !userRoles.Contains(roleName)) && !roles.CurrentUserIsInRoles(RoleNames.Administrators))
 			{
 				return false;
 			}

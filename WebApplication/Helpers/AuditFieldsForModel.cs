@@ -1,18 +1,18 @@
-﻿using System.Text;
-using System.Web.Mvc;
-using K9.Base.DataAccessLayer.Models;
+﻿using K9.Base.DataAccessLayer.Models;
 using K9.Base.Globalisation;
 using K9.SharedLibrary.Authentication;
-using WebMatrix.WebData;
+using System.Text;
+using System.Web.Mvc;
 
 namespace K9.Base.WebApplication.Helpers
 {
-	public static partial class HtmlHelpers
+    public static partial class HtmlHelpers
 	{
 
 		public static MvcHtmlString AuditFieldsForModel<T>(this HtmlHelper<T> html, T model) where T : ObjectBase
 		{
-			if (System.Web.Security.Roles.IsUserInRole(WebSecurity.CurrentUserName, RoleNames.Administrators))
+		    var roles = html.GetRoles();
+			if (roles.CurrentUserIsInRoles(RoleNames.Administrators))
 			{
 				var sb = new StringBuilder();
 

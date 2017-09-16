@@ -14,8 +14,9 @@ namespace K9.Base.WebApplication.UnitsOfWork
 		public IDataSetsHelper DataSetsHelper { get; set; }
 		public IRoles Roles { get; set; }
 		public IFileSourceHelper FileSourceHelper { get; set; }
+	    public IAuthentication Authentication { get; set; }
 
-	    public ControllerPackage(IRepository<T> repository, ILogger logger, IDataTableAjaxHelper<T> ajaxHelper, IDataSetsHelper dataSetsHelper, IRoles roles, IFileSourceHelper fileSourceHelper)
+	    public ControllerPackage(IRepository<T> repository, ILogger logger, IDataTableAjaxHelper<T> ajaxHelper, IDataSetsHelper dataSetsHelper, IRoles roles, IFileSourceHelper fileSourceHelper, IAuthentication authentication)
 		{
 			Repository = repository;
 			Logger = logger;
@@ -23,6 +24,8 @@ namespace K9.Base.WebApplication.UnitsOfWork
 			DataSetsHelper = dataSetsHelper;
 			Roles = roles;
 			FileSourceHelper = fileSourceHelper;
+		    Authentication = authentication;
 		}
+
 	}
 }

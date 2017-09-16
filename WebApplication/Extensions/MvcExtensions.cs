@@ -1,13 +1,13 @@
-﻿using System;
-using System.Linq;
-using System.Web.Mvc;
-using K9.Base.Globalisation;
+﻿using K9.Base.Globalisation;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Models;
+using System;
+using System.Linq;
+using System.Web.Mvc;
 
 namespace K9.Base.WebApplication.Extensions
 {
-	public static class MvcExtensions
+    public static class MvcExtensions
 	{
 
 		public static string GetActiveClass(this ViewContext viewContext, string actionName, string controllerName)
@@ -44,19 +44,25 @@ namespace K9.Base.WebApplication.Extensions
 		public static IDataSetsHelper GetDropdownData(this WebViewPage view)
 		{
 			var baseController = view.ViewContext.Controller as IBaseController;
-			return baseController.DropdownDataSets;
+			return baseController?.DropdownDataSets;
 		}
 
 		public static IRoles GetRoles(this WebViewPage view)
 		{
 			var baseController = view.ViewContext.Controller as IBaseController;
-			return baseController.Roles;
+			return baseController?.Roles;
 		}
 
 		public static string GetControllerName(this Type type)
 		{
 			return type.Name.Replace("Controller", string.Empty);
 		}
+
+	    public static IAuthentication GetAuthentication(this HtmlHelper helper)
+        {
+	        var controller = helper.ViewContext.Controller as IBaseController;
+	        return controller?.Authentication;
+	    }
 
 	}
 }
