@@ -326,6 +326,26 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal("MockLimitedByUser", crumb.ControllerName);
             Assert.Equal(0, (model).Id);
             Assert.Equal(modelSentToEvent, model);
+            Assert.Equal("", viewResult.ViewName);
+        }
+
+        [Fact]
+        public void CreatePost_ModelInvalid()
+        {
+            var person = new Person
+            {
+                Id = 3,
+                Name = "John"
+            };
+            _personController.ModelState.AddModelError("", "Something is wrong");
+
+            var viewResult = Assert.IsType<ViewResult>(_personController.Create(person));
+
+            Assert.Equal("", viewResult.ViewName);
+            Assert.Equal(person, viewResult.Model);
+            Assert.Equal("Persons", _personController.ViewBag.Title);
+            Assert.Equal("Persons", _personController.ViewBag.Title);
+            Assert.Equal("Create New Person for Gizzie", _personController.ViewBag.SubTitle);
         }
 
     }

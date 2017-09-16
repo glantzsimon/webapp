@@ -275,7 +275,7 @@ namespace K9.Base.WebApplication.Controllers
             }
 
             SetTitle();
-            ViewBag.SubTitle = $"{Dictionary.CreateNew} {typeof(T).GetName()}{GetStatelessFilterTitle()}";
+            ViewBag.SubTitle = $"{Dictionary.CreateNew} {typeof(T).GetName()}{GetForUserTitle()}";
 
             AddControllerBreadcrumb();
 
