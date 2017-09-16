@@ -14,6 +14,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using K9.Base.WebApplication.EventArgs;
 using K9.Base.WebApplication.Exceptions;
 using K9.Base.WebApplication.Helpers;
 using K9.Base.WebApplication.Models;
@@ -305,13 +306,26 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             _authentication.SetupGet(_ => _.CurrentUserId)
                 .Returns(CurrentUserId);
 
+            PersonWithIUserData modelSentToEvent = null;
+
+            _limitedController.RecordBeforeCreate += (sender, e) =>
+            {
+                modelSentToEvent = (PersonWithIUserData) e.Item;
+            };
+
             var viewResult = Assert.IsType<ViewResult>(_limitedController.Create());
             var model = viewResult.Model as PersonWithIUserData;
-
+            
             Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
             Assert.Equal("Create New PersonWithIUserData for Gizzie", _limitedController.ViewBag.SubTitle);
-
             Assert.Equal(CurrentUserId, model.UserId);
+
+            var crumb = (_limitedController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("PersonWithIUserDatas", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("MockLimitedByUser", crumb.ControllerName);
+            Assert.Equal(0, (model).Id);
+            Assert.Equal(modelSentToEvent, model);
         }
 
     }
