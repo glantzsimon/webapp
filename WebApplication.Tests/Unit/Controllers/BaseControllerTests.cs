@@ -263,11 +263,11 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             
             MockControllerContext.SetupGet(_ => _.HttpContext.Request.QueryString)
                 .Returns(querystring);
-            _repository.Setup(_ => _.GetCount(It.IsAny<string>()))
+            _repository.Setup(_ => _.GetCount(string.Empty))
                 .Returns(count);
             _repository.Setup(_ => _.GetQuery(It.IsAny<string>()))
                 .Returns(personsList);
-            _ajaxHelper.Setup(_ => _.GetWhereClause(true, CurrentUserId))
+            _ajaxHelper.Setup(_ => _.GetWhereClause(true, null))
                 .Returns(whereClause);
             _repository.Setup(_ => _.GetCount(whereClause))
                 .Returns(filteredCount);
@@ -275,8 +275,8 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             var contentResult = Assert.IsType<ContentResult>(_personController.List());
 
             Assert.Contains("\"draw\":0", contentResult.Content);
-            Assert.Contains($"\"recordsTotal\":{filteredCount}", contentResult.Content);
-            Assert.Contains($"\"recordsFiltered\":{count}", contentResult.Content);
+            Assert.Contains($"\"recordsTotal\":{count}", contentResult.Content);
+            Assert.Contains($"\"recordsFiltered\":{filteredCount}", contentResult.Content);
         }
 
 
