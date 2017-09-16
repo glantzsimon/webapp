@@ -288,13 +288,30 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         [Fact]
         public void Create_ShouldUpateUserId_IfStatelessFilterIsSet()
         {
+            var viewResult = Assert.IsType<ViewResult>(_personController.Create());
+            var model = viewResult.Model as Person;
+
+            Assert.Equal("Persons", _personController.ViewBag.Title);
+            Assert.Equal("Create New Person for Gizzie", _personController.ViewBag.SubTitle);
+
+            Assert.Equal(FilteredUserId, model.UserId);
+        }
+
+        [Fact]
+        public void Create_ShouldUpateUserId_ToAuthenticatedUser_IfImplementsIUserData()
+        {
+            MockControllerContext.SetupGet(_ => _.HttpContext.Request.QueryString)
+                .Returns(new NameValueCollection());
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(CurrentUserId);
+
             var viewResult = Assert.IsType<ViewResult>(_limitedController.Create());
             var model = viewResult.Model as PersonWithIUserData;
 
             Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
             Assert.Equal("Create New PersonWithIUserData for Gizzie", _limitedController.ViewBag.SubTitle);
 
-            Assert.Equal(FilteredUserId, model.UserId);
+            Assert.Equal(CurrentUserId, model.UserId);
         }
 
     }

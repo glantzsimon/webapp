@@ -212,7 +212,7 @@ namespace K9.Base.WebApplication.Controllers
             var statelessFilter = this.GetStatelessFilter();
 
             SetTitle();
-            ViewBag.SubTitle = $"{Dictionary.CreateNew} {typeof(T).GetName()}{GetStatelessFilterTitle()}";
+            ViewBag.SubTitle = $"{Dictionary.CreateNew} {typeof(T).GetName()}{GetForUserTitle()}";
 
             if (statelessFilter.IsSet())
             {
@@ -579,6 +579,16 @@ namespace K9.Base.WebApplication.Controllers
             return string.Empty;
         }
 
+        private string GetIUserDataFilterTitle()
+        {
+            if (typeof(T).ImplementsIUserData())
+            {
+                var tableName = typeof(User).GetTableName();
+                return $" {Dictionary.For.ToLower()} {Repository.GetName(tableName, Authentication.CurrentUserId)}";
+            }
+            return string.Empty;
+        }
+
         public string GetObjectName()
         {
             return typeof(T).Name;
@@ -642,6 +652,20 @@ namespace K9.Base.WebApplication.Controllers
                 var fileSource = item.GetProperty(fileSourcePropertyInfo) as FileSource;
                 FileSourceHelper.LoadFiles(fileSource, false);
             }
+        }
+
+        private string GetForUserTitle()
+        {
+            var statelessFilter = this.GetStatelessFilter();
+            if (statelessFilter.IsSet())
+            {
+                return GetStatelessFilterTitle();
+            }
+            if (typeof(T).ImplementsIUserData())
+            {
+                return GetIUserDataFilterTitle();
+            }
+            return string.Empty;
         }
 
         #endregion
