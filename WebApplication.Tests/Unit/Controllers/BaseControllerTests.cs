@@ -1,10 +1,16 @@
-﻿using System;
-using System.Collections.Generic;
-using K9.Base.WebApplication.Controllers;
+﻿using K9.Base.WebApplication.Controllers;
+using K9.Base.WebApplication.Exceptions;
+using K9.Base.WebApplication.Helpers;
+using K9.Base.WebApplication.Models;
 using K9.Base.WebApplication.UnitsOfWork;
+using K9.SharedLibrary.Attributes;
+using K9.SharedLibrary.Authentication;
+using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Models;
 using K9.WebApplication.Tests.Models;
 using Moq;
+using System;
+using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Globalization;
 using System.IO;
@@ -14,13 +20,7 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using K9.Base.WebApplication.EventArgs;
-using K9.Base.WebApplication.Exceptions;
-using K9.Base.WebApplication.Helpers;
-using K9.Base.WebApplication.Models;
-using K9.SharedLibrary.Attributes;
-using K9.SharedLibrary.Authentication;
-using K9.SharedLibrary.Extensions;
+using K9.SharedLibrary.Helpers;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit.Controllers
@@ -31,15 +31,15 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         public static readonly Mock<ControllerContext> MockControllerContext = new Mock<ControllerContext>();
         public const int FilteredUserId = 2;
 
-        public class MockController<T> : BaseController<T> 
-            where T : class , IObjectBase
+        public class MockController<T> : BaseController<T>
+            where T : class, IObjectBase
         {
             public StreamWriter TextWriter { get; }
 
             public MockController(IControllerPackage<T> controllerPackage) : base(controllerPackage)
             {
                 TextWriter = new StreamWriter(new MemoryStream());
-                
+
                 var routeData = new RouteData();
                 routeData.Values.Add("controller", "PersonsController");
                 var view = new Mock<IView>();
@@ -106,18 +106,21 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         private readonly Mock<IControllerPackage<PersonWithIUserData>> _limitedPackage = new Mock<IControllerPackage<PersonWithIUserData>>();
         private readonly Mock<IDataSetsHelper> _datasetsHelper = new Mock<IDataSetsHelper>();
         private readonly Mock<IDataTableAjaxHelper<Person>> _ajaxHelper = new Mock<IDataTableAjaxHelper<Person>>();
+        private readonly Mock<IFileSourceHelper> _fileSourceHelper = new Mock<IFileSourceHelper>();
         private const int InvalidId = 2;
         private const int ValidId = 3;
         private const int ValidUserId = 7;
         private const int CurrentUserId = 178;
 
         private void SetupPackage<T>(Mock<IControllerPackage<T>> package)
-            where T : class , IObjectBase
+            where T : class, IObjectBase
         {
-              package.SetupGet(_ => _.Authentication)
-                .Returns(_authentication.Object);
+            package.SetupGet(_ => _.Authentication)
+              .Returns(_authentication.Object);
             package.SetupGet(_ => _.Roles)
                 .Returns(_roles.Object);
+            package.SetupGet(_ => _.FileSourceHelper)
+                .Returns(_fileSourceHelper.Object);
         }
 
         private void SetupRepository<T>(Mock<IRepository<T>> repository)
@@ -191,7 +194,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                 .Returns(true);
             _roles.Setup(_ => _.CurrentUserIsInRoles(RoleNames.Administrators))
                 .Returns(false);
-          
+
             Assert.Throws<LimitByUserIdException>(() => _limitedErrorController.Details(ValidId));
         }
 
@@ -266,7 +269,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             }
 
             var whereClause = " WHERE UserId = 178";
-            
+
             MockControllerContext.SetupGet(_ => _.HttpContext.Request.QueryString)
                 .Returns(querystring);
             _repository.Setup(_ => _.GetCount(string.Empty))
@@ -310,12 +313,12 @@ namespace K9.WebApplication.Tests.Unit.Controllers
 
             _limitedController.RecordBeforeCreate += (sender, e) =>
             {
-                modelSentToEvent = (PersonWithIUserData) e.Item;
+                modelSentToEvent = (PersonWithIUserData)e.Item;
             };
 
             var viewResult = Assert.IsType<ViewResult>(_limitedController.Create());
             var model = viewResult.Model as PersonWithIUserData;
-            
+
             Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
             Assert.Equal("Create New PersonWithIUserData for Gizzie", _limitedController.ViewBag.SubTitle);
             Assert.Equal(CurrentUserId, model.UserId);
@@ -346,6 +349,37 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal("Persons", _personController.ViewBag.Title);
             Assert.Equal("Persons", _personController.ViewBag.Title);
             Assert.Equal("Create New Person for Gizzie", _personController.ViewBag.SubTitle);
+        }
+
+        [Fact]
+        public void CreatePost_Success()
+        {
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var person = new Person
+            {
+                Id = 3,
+                Name = "John",
+                Photos = fileSource
+            };
+            Person modelSentToEvent = null;
+            _personController.RecordBeforeCreated += (sender, e) =>
+            {
+                modelSentToEvent = (Person)e.Item;
+            };
+
+            var redirectResult = Assert.IsType<RedirectToRouteResult>(_personController.Create(person));
+
+            Assert.Equal(modelSentToEvent, person);
+            Assert.Equal("Index", redirectResult.RouteValues["action"]);
+            _repository.Verify(_ => _.Create(person), Times.Once);
+            _fileSourceHelper.Verify(_ => _.SaveFilesToDisk(fileSource, It.IsAny<bool>()), Times.Once);
+
         }
 
     }
