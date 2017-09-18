@@ -368,9 +368,14 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                 Photos = fileSource
             };
             Person modelSentToEvent = null;
+            Person modelSentToEvent2 = null;
             _personController.RecordBeforeCreated += (sender, e) =>
             {
                 modelSentToEvent = (Person)e.Item;
+            };
+            _personController.RecordCreated += (sender, e) =>
+            {
+                modelSentToEvent2 = (Person)e.Item;
             };
 
             var redirectResult = Assert.IsType<RedirectToRouteResult>(_personController.Create(person));
@@ -379,6 +384,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal("Index", redirectResult.RouteValues["action"]);
             _repository.Verify(_ => _.Create(person), Times.Once);
             _fileSourceHelper.Verify(_ => _.SaveFilesToDisk(fileSource, It.IsAny<bool>()), Times.Once);
+            Assert.Equal(modelSentToEvent2, person);
 
         }
 
