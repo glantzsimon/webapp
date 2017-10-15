@@ -343,12 +343,60 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             _personController.ModelState.AddModelError("", "Something is wrong");
 
             var viewResult = Assert.IsType<ViewResult>(_personController.Create(person));
+            var model = viewResult.Model as Person;
 
             Assert.Equal("", viewResult.ViewName);
             Assert.Equal(person, viewResult.Model);
             Assert.Equal("Persons", _personController.ViewBag.Title);
+            Assert.Equal("Create New Person for Gizzie", _personController.ViewBag.SubTitle);
+
+            var crumb = (_personController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("Persons", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("Persons", crumb.ControllerName);
+            Assert.Equal(3, model.Id);
+            Assert.Equal("", viewResult.ViewName);
+        }
+
+        [Fact]
+        public void CreatePost_ThrowsError()
+        {
+            var person = new Person
+            {
+                Id = 3,
+                Name = "John"
+            };
+            _repository.Setup(_ => _.Create(person))
+                .Throws(new Exception("Oops"));
+
+            var viewResult = Assert.IsType<ViewResult>(_personController.Create(person));
+            var model = viewResult.Model as Person;
+
+            Person modelSentToEvent = null;
+            Person modelErrorSentToEvent = null;
+            _personController.RecordBeforeCreated += (sender, e) =>
+            {
+                modelSentToEvent = (Person)e.Item;
+            };
+            _personController.RecordBeforeCreated += (sender, e) =>
+            {
+                modelErrorSentToEvent = (Person)e.Item;
+            };
+
+            Assert.Equal(1, _personController.ModelState.Values.SelectMany(v => v.Errors).Count());
+            Assert.Equal(person, modelSentToEvent);
+            Assert.Equal(person, modelErrorSentToEvent);
+            Assert.Equal("", viewResult.ViewName);
+            Assert.Equal(person, viewResult.Model);
             Assert.Equal("Persons", _personController.ViewBag.Title);
             Assert.Equal("Create New Person for Gizzie", _personController.ViewBag.SubTitle);
+
+            var crumb = (_personController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("Persons", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("Persons", crumb.ControllerName);
+            Assert.Equal(3, model.Id);
+            Assert.Equal("", viewResult.ViewName);
         }
 
         [Fact]
@@ -385,7 +433,6 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             _repository.Verify(_ => _.Create(person), Times.Once);
             _fileSourceHelper.Verify(_ => _.SaveFilesToDisk(fileSource, It.IsAny<bool>()), Times.Once);
             Assert.Equal(modelSentToEvent2, person);
-
         }
 
     }
