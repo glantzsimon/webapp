@@ -6,9 +6,11 @@ using K9.Base.WebApplication.UnitsOfWork;
 using K9.SharedLibrary.Attributes;
 using K9.SharedLibrary.Authentication;
 using K9.SharedLibrary.Extensions;
+using K9.SharedLibrary.Helpers;
 using K9.SharedLibrary.Models;
 using K9.WebApplication.Tests.Models;
 using Moq;
+using NLog;
 using System;
 using System.Collections.Generic;
 using System.Collections.Specialized;
@@ -20,7 +22,6 @@ using System.Threading;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using K9.SharedLibrary.Helpers;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit.Controllers
@@ -62,6 +63,8 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                     .Returns(routeData);
                 MockControllerContext.SetupGet(_ => _.HttpContext.Response)
                     .Returns(MockHttpResponse.Object);
+                MockHttpResponse.SetupSet(_ => _.StatusCode = It.IsAny<int>())
+                    .Callback<int>(value => _statusCode = value);
                 engine.Setup(e => e.FindPartialView(It.IsAny<ControllerContext>(), It.IsAny<string>(), It.IsAny<bool>()))
                     .Returns(viewEngineResult);
 
@@ -107,10 +110,12 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         private readonly Mock<IDataSetsHelper> _datasetsHelper = new Mock<IDataSetsHelper>();
         private readonly Mock<IDataTableAjaxHelper<Person>> _ajaxHelper = new Mock<IDataTableAjaxHelper<Person>>();
         private readonly Mock<IFileSourceHelper> _fileSourceHelper = new Mock<IFileSourceHelper>();
+        private readonly Mock<ILogger> _logger = new Mock<ILogger>();
         private const int InvalidId = 2;
         private const int ValidId = 3;
         private const int ValidUserId = 7;
         private const int CurrentUserId = 178;
+        private static int _statusCode = 0;
 
         private void SetupPackage<T>(Mock<IControllerPackage<T>> package)
             where T : class, IObjectBase
@@ -121,6 +126,8 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                 .Returns(_roles.Object);
             package.SetupGet(_ => _.FileSourceHelper)
                 .Returns(_fileSourceHelper.Object);
+            package.SetupGet(_ => _.Logger)
+                .Returns(_logger.Object);
         }
 
         private void SetupRepository<T>(Mock<IRepository<T>> repository)
@@ -176,15 +183,10 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         [Fact]
         public void Details_ShouldReturnHttpNotFoundIfItemNotFound()
         {
-            var statuscode = 0;
-
-            MockHttpResponse.SetupSet(_ => _.StatusCode = It.IsAny<int>())
-                .Callback<int>(value => statuscode = value);
-
             var view = Assert.IsType<ViewResult>(_personController.Details(InvalidId));
 
             Assert.Equal("NotFound", view.ViewName);
-            Assert.Equal((int)HttpStatusCode.NotFound, statuscode);
+            Assert.Equal((int)HttpStatusCode.NotFound, _statusCode);
         }
 
         [Fact]
@@ -201,10 +203,6 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         [Fact]
         public void WhenLimitedByUser_AndNonAdminUserLoggedIn_AndObjectBaseSupportsLimiting_ButUserIdIsDifferentFromRecordUserId()
         {
-            var statuscode = 0;
-
-            MockHttpResponse.SetupSet(_ => _.StatusCode = It.IsAny<int>())
-                .Callback<int>(value => statuscode = value);
             _authentication.SetupGet(_ => _.IsAuthenticated)
                 .Returns(true);
             _authentication.SetupGet(_ => _.CurrentUserId)
@@ -215,7 +213,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             var view = Assert.IsType<ViewResult>(_limitedController.Details(ValidId));
 
             Assert.Equal("Unauthorized", view.ViewName);
-            Assert.Equal((int)HttpStatusCode.Forbidden, statuscode);
+            Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
         }
 
         [Fact]
@@ -366,23 +364,22 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                 Id = 3,
                 Name = "John"
             };
-            _repository.Setup(_ => _.Create(person))
-                .Throws(new Exception("Oops"));
-
-            var viewResult = Assert.IsType<ViewResult>(_personController.Create(person));
-            var model = viewResult.Model as Person;
-
             Person modelSentToEvent = null;
             Person modelErrorSentToEvent = null;
+            _repository.Setup(_ => _.Create(person))
+                .Throws(new Exception("Oops"));
             _personController.RecordBeforeCreated += (sender, e) =>
             {
                 modelSentToEvent = (Person)e.Item;
             };
-            _personController.RecordBeforeCreated += (sender, e) =>
+            _personController.RecordCreateError += (sender, e) =>
             {
                 modelErrorSentToEvent = (Person)e.Item;
             };
-
+            
+            var viewResult = Assert.IsType<ViewResult>(_personController.Create(person));
+            var model = viewResult.Model as Person;
+            
             Assert.Equal(1, _personController.ModelState.Values.SelectMany(v => v.Errors).Count());
             Assert.Equal(person, modelSentToEvent);
             Assert.Equal(person, modelErrorSentToEvent);
@@ -435,6 +432,70 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal(modelSentToEvent2, person);
         }
 
+        [Fact]
+        public void Edit_ShouldReturnNotFound()
+        {
+            var viewResult = Assert.IsType<ViewResult>(_personController.Edit(InvalidId));
+
+            Assert.Equal("NotFound", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.NotFound, _statusCode);
+        }
+
+        [Fact]
+        public void Edit_ShouldReturnForbidden_IfBelongsToOtherUser()
+        {
+            var userId = 34;
+            var otherUserId = 55;
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(new PersonWithIUserData
+                {
+                    Id = ValidId,
+                    UserId = userId
+                });
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(otherUserId);
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(ValidId));
+
+            Assert.Equal("Unauthorized", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
+        }
+
+        [Fact]
+        public void Edit_ShouldReturnForbidden_IfSystemStandard()
+        {
+            var userId = 34;
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(new PersonWithIUserData
+                {
+                    Id = ValidId,
+                    UserId = userId,
+                    IsSystemStandard = true
+                });
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(ValidId));
+
+            Assert.Equal("Unauthorized", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
+        }
+
+        //[Fact]
+        //public void Edit_ShouldUpateUserId_IfStatelessFilterIsSet()
+        //{
+        //    var viewResult = Assert.IsType<ViewResult>(_personController.Edit(ValidId));
+        //    var model = viewResult.Model as Person;
+
+        //    Assert.Equal("Persons", _personController.ViewBag.Title);
+        //    Assert.Equal("Edit Person for Gizzie", _personController.ViewBag.SubTitle);
+
+        //    Assert.Equal(FilteredUserId, model.UserId);
+        //}
     }
 
 }
