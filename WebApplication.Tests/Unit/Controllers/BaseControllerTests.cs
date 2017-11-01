@@ -376,10 +376,10 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             {
                 modelErrorSentToEvent = (Person)e.Item;
             };
-            
+
             var viewResult = Assert.IsType<ViewResult>(_personController.Create(person));
             var model = viewResult.Model as Person;
-            
+
             Assert.Equal(1, _personController.ModelState.Values.SelectMany(v => v.Errors).Count());
             Assert.Equal(person, modelSentToEvent);
             Assert.Equal(person, modelErrorSentToEvent);
@@ -483,6 +483,45 @@ namespace K9.WebApplication.Tests.Unit.Controllers
 
             Assert.Equal("Unauthorized", viewResult.ViewName);
             Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
+        }
+
+        [Fact]
+        public void Edit_ShouldReturnForbidden_HappyPath()
+        {
+            var userId = 34;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var model = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                Photos = fileSource
+            };
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(model);
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(ValidId));
+
+            Assert.Equal("", viewResult.ViewName);
+            Assert.Equal(model, viewResult.Model);
+            Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
+            Assert.Equal("Edit PersonWithIUserData", _limitedController.ViewBag.SubTitle);
+
+            var crumb = (_limitedController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("PersonWithIUserDatas", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("MockLimitedByUser", crumb.ControllerName);
+
+            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Once);
         }
 
         //[Fact]
