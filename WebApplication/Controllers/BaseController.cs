@@ -360,9 +360,7 @@ namespace K9.Base.WebApplication.Controllers
                 {
                     Logger.Error(ex.GetFullErrorMessage);
                     ModelState.AddErrorMessageFromException<T>(ex, item);
-
-                    LoadUploadedFiles(item);
-
+                    
                     RecordUpdateError?.Invoke(this, new CrudEventArgs
                     {
                         Item = item
@@ -374,6 +372,8 @@ namespace K9.Base.WebApplication.Controllers
             ViewBag.SubTitle = $"{Dictionary.Edit} {typeof(T).GetName()}";
 
             AddControllerBreadcrumb();
+
+            LoadUploadedFiles(item);
 
             return View(item);
         }
@@ -404,6 +404,8 @@ namespace K9.Base.WebApplication.Controllers
 
             AddControllerBreadcrumb();
 
+            LoadUploadedFiles(item);
+
             RecordBeforeDelete?.Invoke(this, new CrudEventArgs
             {
                 Item = item
@@ -420,56 +422,56 @@ namespace K9.Base.WebApplication.Controllers
         public virtual ActionResult DeleteConfirmed(int id = 0)
         {
             T item = null;
-            if (ModelState.IsValid)
+
+            item = Repository.Find(id);
+            if (item == null)
             {
-                item = Repository.Find(id);
-                if (item == null)
+                return HttpNotFound();
+            }
+
+            if (item.IsSystemStandard)
+            {
+                return HttpForbidden();
+            }
+
+            if (!IsCurrentUserPermittedToViewOtherUsersData(item))
+            {
+                return HttpForbidden();
+            }
+
+            try
+            {
+                RecordBeforeDeleted?.Invoke(this, new CrudEventArgs
                 {
-                    return HttpNotFound();
-                }
+                    Item = item
+                });
 
-                if (item.IsSystemStandard)
+                Repository.Delete(id);
+
+                RecordDeleted?.Invoke(this, new CrudEventArgs
                 {
-                    return HttpForbidden();
-                }
+                    Item = item
+                });
 
-                if (!IsCurrentUserPermittedToViewOtherUsersData(item))
+                return RedirectToAction("Index", this.GetFilterRouteValueDictionary());
+            }
+            catch (Exception ex)
+            {
+                Logger.Error(ex.GetFullErrorMessage());
+                ModelState.AddErrorMessageFromException(ex, item);
+
+                RecordDeleteError?.Invoke(this, new CrudEventArgs
                 {
-                    return HttpForbidden();
-                }
-
-                try
-                {
-                    RecordBeforeDeleted?.Invoke(this, new CrudEventArgs
-                    {
-                        Item = item
-                    });
-
-                    Repository.Delete(id);
-
-                    RecordDeleted?.Invoke(this, new CrudEventArgs
-                    {
-                        Item = item
-                    });
-
-                    return RedirectToAction("Index", this.GetFilterRouteValueDictionary());
-                }
-                catch (Exception ex)
-                {
-                    Logger.Error(ex.GetFullErrorMessage());
-                    ModelState.AddErrorMessageFromException(ex, item);
-
-                    RecordDeleteError?.Invoke(this, new CrudEventArgs
-                    {
-                        Item = item
-                    });
-                }
+                    Item = item
+                });
             }
 
             SetTitle();
             ViewBag.SubTitle = $"{Dictionary.Delete} {typeof(T).GetName()}";
 
             AddControllerBreadcrumb();
+
+            LoadUploadedFiles(item);
 
             return View(item);
         }

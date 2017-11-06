@@ -565,7 +565,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal(3, model.Id);
             Assert.Equal("", viewResult.ViewName);
 
-            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Never);
+            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Once);
         }
 
         [Fact]
@@ -631,6 +631,66 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         }
 
         [Fact]
+        public void EditPost_ThrowsError()
+        {
+            var userId = 3;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var model = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                IsSystemStandard = false,
+                Photos = fileSource
+            };
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(model);
+            _limitedRepository.Setup(_ => _.Update(model))
+                .Throws(new Exception("Oops"));
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            PersonWithIUserData modelSentToEvent = null;
+            PersonWithIUserData modelSentToEvent2 = null;
+            _limitedController.RecordBeforeUpdated += (sender, e) =>
+            {
+                modelSentToEvent = (PersonWithIUserData)e.Item;
+            };
+            _limitedController.RecordUpdated += (sender, e) =>
+            {
+                modelSentToEvent2 = (PersonWithIUserData)e.Item;
+            };
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(model));
+             
+            _fileSourceHelper.Verify(_ => _.SaveFilesToDisk(fileSource, It.IsAny<bool>()), Times.Once);
+            Assert.Equal(modelSentToEvent, model);
+            _limitedRepository.Verify(_ => _.Update(model), Times.Once);
+            Assert.Null(modelSentToEvent2);
+
+            Assert.Equal("", viewResult.ViewName);
+            Assert.Equal(model, viewResult.Model);
+            Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
+            Assert.Equal("Edit PersonWithIUserData", _limitedController.ViewBag.SubTitle);
+
+            var crumb = (_limitedController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("PersonWithIUserDatas", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("MockLimitedByUser", crumb.ControllerName);
+            Assert.Equal(3, model.Id);
+            Assert.Equal("", viewResult.ViewName);
+
+            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Once);
+        }
+
+        [Fact]
         public void EditPost_HappyPath()
         {
             var userId = 3;
@@ -675,17 +735,105 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal("Index", redirectResult.RouteValues["action"]);
         }
 
-        //[Fact]
-        //public void Edit_ShouldUpateUserId_IfStatelessFilterIsSet()
-        //{
-        //    var viewResult = Assert.IsType<ViewResult>(_personController.Edit(ValidId));
-        //    var model = viewResult.Model as Person;
+        [Fact]
+        public void Delete_ShouldReturnNotFound()
+        {
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(InvalidId));
 
-        //    Assert.Equal("Persons", _personController.ViewBag.Title);
-        //    Assert.Equal("Edit Person for Gizzie", _personController.ViewBag.SubTitle);
+            Assert.Equal("NotFound", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.NotFound, _statusCode);
+        }
 
-        //    Assert.Equal(FilteredUserId, model.UserId);
-        //}
+        [Fact]
+        public void Delete_ShouldReturnForbidden_IfBelongsToOtherUser()
+        {
+            var userId = 34;
+            var otherUserId = 55;
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(new PersonWithIUserData
+                {
+                    Id = ValidId,
+                    UserId = userId
+                });
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(otherUserId);
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Delete(ValidId));
+
+            Assert.Equal("Unauthorized", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
+        }
+
+        [Fact]
+        public void Delete_ShouldReturnForbidden_IfSystemStandard()
+        {
+            var userId = 34;
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(new PersonWithIUserData
+                {
+                    Id = ValidId,
+                    UserId = userId,
+                    IsSystemStandard = true
+                });
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Delete(ValidId));
+
+            Assert.Equal("Unauthorized", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
+        }
+
+        [Fact]
+        public void Delete_HappyPath()
+        {
+            var userId = 34;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var model = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                Photos = fileSource
+            };
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(model);
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            PersonWithIUserData modelSentToEvent = null;
+            _limitedController.RecordBeforeDelete += (sender, e) =>
+            {
+                modelSentToEvent = (PersonWithIUserData)e.Item;
+            };
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Delete(ValidId));
+
+            Assert.Equal(modelSentToEvent, model);
+            Assert.Equal("", viewResult.ViewName);
+            Assert.Equal(model, viewResult.Model);
+            Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
+            Assert.Equal("Delete PersonWithIUserData", _limitedController.ViewBag.SubTitle);
+
+            var crumb = (_limitedController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("PersonWithIUserDatas", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("MockLimitedByUser", crumb.ControllerName);
+
+            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Once);
+        }
+
     }
 
 }
