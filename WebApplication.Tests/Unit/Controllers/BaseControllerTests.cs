@@ -486,7 +486,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         }
 
         [Fact]
-        public void Edit_ShouldReturnForbidden_HappyPath()
+        public void Edit_HappyPath()
         {
             var userId = 34;
             var fileSource = new FileSource
@@ -509,8 +509,15 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             _authentication.SetupGet(_ => _.CurrentUserId)
                 .Returns(userId);
 
+            PersonWithIUserData modelSentToEvent = null;
+            _limitedController.RecordBeforeUpdate += (sender, e) =>
+            {
+                modelSentToEvent = (PersonWithIUserData)e.Item;
+            };
+
             var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(ValidId));
 
+            Assert.Equal(modelSentToEvent, model);
             Assert.Equal("", viewResult.ViewName);
             Assert.Equal(model, viewResult.Model);
             Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
@@ -522,6 +529,150 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal("MockLimitedByUser", crumb.ControllerName);
 
             _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Once);
+        }
+
+        [Fact]
+        public void EditPost_IfModelStateIsInvalid()
+        {
+            var userId = 3;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var person = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                Photos = fileSource
+            };
+            _personController.ModelState.AddModelError("", "Something is wrong");
+
+            var viewResult = Assert.IsType<ViewResult>(_personController.Edit(person));
+            var model = viewResult.Model as Person;
+
+            Assert.Equal("", viewResult.ViewName);
+            Assert.Equal(person, viewResult.Model);
+            Assert.Equal("Persons", _personController.ViewBag.Title);
+            Assert.Equal("Edit Person", _personController.ViewBag.SubTitle);
+
+            var crumb = (_personController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("Persons", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("Persons", crumb.ControllerName);
+            Assert.Equal(3, model.Id);
+            Assert.Equal("", viewResult.ViewName);
+
+            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Never);
+        }
+
+        [Fact]
+        public void EditPost_ShouldReturnForbidden_IfSystemStandard()
+        {
+            var userId = 3;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var model = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                IsSystemStandard = true,
+                Photos = fileSource
+            };
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(model);
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(model));
+
+            Assert.Equal("Unauthorized", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
+        }
+
+        [Fact]
+        public void EditPost_ShouldReturnForbidden_IfAuthenticatedUserIsNotPermitted()
+        {
+            var userId = 3;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var model = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                IsSystemStandard = false,
+                Photos = fileSource
+            };
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(model);
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(87);
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(model));
+
+            Assert.Equal("Unauthorized", viewResult.ViewName);
+            Assert.Equal((int)HttpStatusCode.Forbidden, _statusCode);
+        }
+
+        [Fact]
+        public void EditPost_HappyPath()
+        {
+            var userId = 3;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var model = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                IsSystemStandard = false,
+                Photos = fileSource
+            };
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(model);
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            PersonWithIUserData modelSentToEvent = null;
+            PersonWithIUserData modelSentToEvent2 = null;
+            _limitedController.RecordBeforeUpdated += (sender, e) =>
+            {
+                modelSentToEvent = (PersonWithIUserData)e.Item;
+            };
+            _limitedController.RecordUpdated += (sender, e) =>
+            {
+                modelSentToEvent2 = (PersonWithIUserData)e.Item;
+            };
+
+            var redirectResult = Assert.IsType<RedirectToRouteResult>(_limitedController.Edit(model));
+
+            _fileSourceHelper.Verify(_ => _.SaveFilesToDisk(fileSource, It.IsAny<bool>()), Times.Once);
+            Assert.Equal(modelSentToEvent, model);
+            _limitedRepository.Verify(_ => _.Update(model), Times.Once);
+            Assert.Equal(modelSentToEvent2, model);
+            Assert.Equal("Index", redirectResult.RouteValues["action"]);
         }
 
         //[Fact]
