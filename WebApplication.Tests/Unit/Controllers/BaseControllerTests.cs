@@ -659,6 +659,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
 
             PersonWithIUserData modelSentToEvent = null;
             PersonWithIUserData modelSentToEvent2 = null;
+            PersonWithIUserData modelSentToEvent3 = null;
             _limitedController.RecordBeforeUpdated += (sender, e) =>
             {
                 modelSentToEvent = (PersonWithIUserData)e.Item;
@@ -667,6 +668,10 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             {
                 modelSentToEvent2 = (PersonWithIUserData)e.Item;
             };
+            _limitedController.RecordUpdateError += (sender, e) =>
+            {
+                modelSentToEvent3 = (PersonWithIUserData)e.Item;
+            };
 
             var viewResult = Assert.IsType<ViewResult>(_limitedController.Edit(model));
              
@@ -674,6 +679,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal(modelSentToEvent, model);
             _limitedRepository.Verify(_ => _.Update(model), Times.Once);
             Assert.Null(modelSentToEvent2);
+            Assert.Equal(modelSentToEvent3, model);
 
             Assert.Equal("", viewResult.ViewName);
             Assert.Equal(model, viewResult.Model);
@@ -789,6 +795,70 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         }
 
         [Fact]
+        public void DeletePost_ThrowsError()
+        {
+            var userId = 34;
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var model = new PersonWithIUserData
+            {
+                Id = ValidId,
+                UserId = userId,
+                Photos = fileSource
+            };
+            _limitedRepository.Setup(_ => _.Find(ValidId))
+                .Returns(model);
+            _limitedRepository.Setup(_ => _.Delete(ValidId))
+                .Throws(new Exception());
+            _authentication.SetupGet(_ => _.IsAuthenticated)
+                .Returns(true);
+            _authentication.SetupGet(_ => _.CurrentUserId)
+                .Returns(userId);
+
+            PersonWithIUserData modelSentToEvent = null;
+            PersonWithIUserData modelSentToEvent2 = null;
+            PersonWithIUserData modelSentToEvent3 = null;
+            _limitedController.RecordBeforeDeleted += (sender, e) =>
+            {
+                modelSentToEvent = (PersonWithIUserData)e.Item;
+            };
+            _limitedController.RecordDeleted += (sender, e) =>
+            {
+                modelSentToEvent2 = (PersonWithIUserData)e.Item;
+            };
+            _limitedController.RecordDeleteError += (sender, e) =>
+            {
+                modelSentToEvent3 = (PersonWithIUserData)e.Item;
+            };
+
+            var viewResult = Assert.IsType<ViewResult>(_limitedController.DeleteConfirmed(ValidId));
+
+            Assert.Equal(modelSentToEvent, model);
+            _limitedRepository.Verify(_ => _.Delete(ValidId), Times.Once);
+            Assert.Null(modelSentToEvent2);
+            Assert.Equal(modelSentToEvent3, model);
+
+            Assert.Equal("", viewResult.ViewName);
+            Assert.Equal(model, viewResult.Model);
+            Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
+            Assert.Equal("Delete PersonWithIUserData", _limitedController.ViewBag.SubTitle);
+
+            var crumb = (_limitedController.ViewBag.Crumbs as List<Crumb>).First();
+            Assert.Equal("PersonWithIUserDatas", crumb.Label);
+            Assert.Equal("Index", crumb.ActionName);
+            Assert.Equal("MockLimitedByUser", crumb.ControllerName);
+            Assert.Equal(3, model.Id);
+            Assert.Equal("", viewResult.ViewName);
+
+            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Once);
+        }
+
+        [Fact]
         public void Delete_HappyPath()
         {
             var userId = 34;
@@ -813,27 +883,25 @@ namespace K9.WebApplication.Tests.Unit.Controllers
                 .Returns(userId);
 
             PersonWithIUserData modelSentToEvent = null;
-            _limitedController.RecordBeforeDelete += (sender, e) =>
+            PersonWithIUserData modelSentToEvent2 = null;
+            _limitedController.RecordBeforeDeleted += (sender, e) =>
             {
                 modelSentToEvent = (PersonWithIUserData)e.Item;
             };
+            _limitedController.RecordDeleted += (sender, e) =>
+            {
+                modelSentToEvent2 = (PersonWithIUserData)e.Item;
+            };
 
-            var viewResult = Assert.IsType<ViewResult>(_limitedController.Delete(ValidId));
+            var redirectResult = Assert.IsType<RedirectToRouteResult>(_limitedController.DeleteConfirmed(ValidId));
 
             Assert.Equal(modelSentToEvent, model);
-            Assert.Equal("", viewResult.ViewName);
-            Assert.Equal(model, viewResult.Model);
-            Assert.Equal("PersonWithIUserDatas", _limitedController.ViewBag.Title);
-            Assert.Equal("Delete PersonWithIUserData", _limitedController.ViewBag.SubTitle);
+            Assert.Equal(modelSentToEvent2, model);
+            Assert.Equal("Index", redirectResult.RouteValues["action"]);
 
-            var crumb = (_limitedController.ViewBag.Crumbs as List<Crumb>).First();
-            Assert.Equal("PersonWithIUserDatas", crumb.Label);
-            Assert.Equal("Index", crumb.ActionName);
-            Assert.Equal("MockLimitedByUser", crumb.ControllerName);
-
-            _fileSourceHelper.Verify(_ => _.LoadFiles(fileSource, false), Times.Once);
+            _limitedRepository.Verify(_ => _.Delete(ValidId), Times.Once);
         }
-
+        
     }
 
 }
