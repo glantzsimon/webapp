@@ -243,6 +243,7 @@
     <Compile Include="Unit\Helpers\DataTableAjaxHelperTests.cs" />
     <Compile Include="Unit\Helpers\HtmlHelperTests.cs" />
     <Compile Include="Unit\JavascriptSerializerTests.cs" />
+    <Compile Include="Unit\Services\AccountServiceTests.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="App.config" />
