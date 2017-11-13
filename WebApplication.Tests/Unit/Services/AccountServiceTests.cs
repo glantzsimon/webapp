@@ -299,6 +299,153 @@ namespace K9.WebApplication.Tests.Unit.Services
             Assert.Equal(1, result.Errors.Count);
             Assert.False(result.IsSuccess);
         }
+
+        [Fact]
+        public void ResetPassword_Success()
+        {
+            Assert.True(_service.ResetPassword(new UserAccount.ResetPasswordModel()).IsSuccess);
+        }
+
+        [Fact]
+        public void ActivateAccount_Fail()
+        {
+            var result = _service.ActivateAccount(3, "token");
+            Assert.Equal(EActivateAccountResult.Fail, result.Result);
+        }
+        
+        [Fact]
+        public void ActivateAccount_Success()
+        {
+            _userRepository.Setup(_ => _.Find(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(new List<User>
+                {
+                    new User
+                    {
+                        Username = "jbloggs",
+                        EmailAddress = "jbloggs@test.com",
+                        FirstName = "Joe",
+                        Name = "Joe Bloggs"
+                    }
+                }.AsQueryable());
+            _authentication.Setup(_ => _.ConfirmAccount(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
+
+            var token = "token";    
+            var result = _service.ActivateAccount(3, token);
+
+            Assert.Equal(EActivateAccountResult.Success, result.Result);
+            Assert.Equal(token, result.Token);
+        }
+
+        [Fact]
+        public void ActivateAccountByUsername_Fail()
+        {
+            var result = _service.ActivateAccount("username", "token");
+            Assert.Equal(EActivateAccountResult.Fail, result.Result);
+        }
+
+        [Fact]
+        public void ActivateAccountbyUsername_Success()
+        {
+            _userRepository.Setup(_ => _.Find(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(new List<User>
+                {
+                    new User
+                    {
+                        Username = "jbloggs",
+                        EmailAddress = "jbloggs@test.com",
+                        FirstName = "Joe",
+                        Name = "Joe Bloggs"
+                    }
+                }.AsQueryable());
+            _authentication.Setup(_ => _.ConfirmAccount(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
+
+            var token = "token";
+            var result = _service.ActivateAccount("username", token);
+
+            Assert.Equal(EActivateAccountResult.Success, result.Result);
+            Assert.Equal(token, result.Token);
+        }
+
+        [Fact]
+        public void ActivateAccount_AlreadyActivated()
+        {
+            var token = "token";
+            var user = new User
+            {
+                Id = 3,
+                Username = "jbloggs"
+            };
+            _userRepository.Setup(_ => _.Find(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(new List<User>
+                {
+                    new User
+                    {
+                        Username = "jbloggs",
+                        EmailAddress = "jbloggs@test.com",
+                        FirstName = "Joe",
+                        Name = "Joe Bloggs"
+                    }
+                }.AsQueryable());
+            _authentication.Setup(_ => _.ConfirmAccount(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(true);
+            _authentication.Setup(_ => _.IsConfirmed(user.Username))
+                .Returns(true);
+                
+            var result = _service.ActivateAccount(user, token);
+
+            Assert.Equal(EActivateAccountResult.AlreadyActivated, result.Result);
+        }
+
+        [Fact]
+        public void ActivateAccountByUser_Fail()
+        {
+            var token = "token";
+            var user = new User
+            {
+                Id = 3,
+                Username = "jbloggs"
+            };
+            _userRepository.Setup(_ => _.Find(It.IsAny<Expression<Func<User, bool>>>()))
+                .Returns(new List<User>
+                {
+                    new User
+                    {
+                        Username = "jbloggs",
+                        EmailAddress = "jbloggs@test.com",
+                        FirstName = "Joe",
+                        Name = "Joe Bloggs"
+                    }
+                }.AsQueryable());
+            _authentication.Setup(_ => _.ConfirmAccount(It.IsAny<string>(), It.IsAny<string>()))
+                .Returns(false);
+            _authentication.Setup(_ => _.IsConfirmed(user.Username))
+                .Returns(false);
+
+            var result = _service.ActivateAccount(user, token);
+
+            Assert.Equal(EActivateAccountResult.Fail, result.Result);
+        }
+
+        [Fact]
+        public void Logout_LogsOut()
+        {
+            _service.Logout();
+            _authentication.Verify(_ => _.Logout(), Times.Once);
+        }
+
+        [Fact]
+        public void GetAccountActivationToken_HappyPath()
+        {
+            var token = "bak";
+            _userRepository.Setup(_ => _.CustomQuery<string>(It.IsAny<string>()))
+                .Returns(new List<string>
+                {
+                    token
+                });
+            Assert.Equal(token, _service.GetAccountActivationToken(3));
+        }
     }
 
 }
