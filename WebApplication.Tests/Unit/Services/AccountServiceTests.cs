@@ -10,8 +10,10 @@ using Moq;
 using NLog;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web;
 using System.Web.Security;
 using Xunit;
 
@@ -39,7 +41,13 @@ namespace K9.WebApplication.Tests.Unit.Services
                     CompanyName = "Test Company"
                 });
 
-            _service = new AccountService(_userRepository.Object, _config.Object, _mailer.Object, _authentication.Object, _logger.Object, UrlTestHelper.CreaTestHelper());
+            HttpContext.Current = new HttpContext(
+                new HttpRequest("", "http://tempuri.org", ""),
+                new HttpResponse(new StringWriter())
+            );
+
+            _service = new AccountService(_userRepository.Object, _config.Object, _mailer.Object, _authentication.Object, _logger.Object);
+            _service.UrlHelper = UrlTestHelper.CreaTestHelper();
 
             _authentication.Setup(_ => _.Login(InvalidLogin, It.IsAny<string>(), false))
                 .Returns(false);

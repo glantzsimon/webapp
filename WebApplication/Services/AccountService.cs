@@ -3,17 +3,16 @@ using K9.Base.Globalisation;
 using K9.Base.WebApplication.Config;
 using K9.Base.WebApplication.Enums;
 using K9.Base.WebApplication.Models;
+using K9.SharedLibrary.Authentication;
 using K9.SharedLibrary.Extensions;
 using K9.SharedLibrary.Helpers;
 using K9.SharedLibrary.Models;
 using NLog;
 using System;
 using System.Linq;
-using System.Security.Authentication;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
-using K9.SharedLibrary.Authentication;
 
 namespace K9.Base.WebApplication.Services
 {
@@ -24,16 +23,22 @@ namespace K9.Base.WebApplication.Services
         private readonly IAuthentication _authentication;
         private readonly ILogger _logger;
         private readonly WebsiteConfiguration _config;
-        private readonly UrlHelper _urlHelper;
+        private UrlHelper _urlHelper;
 
-        public AccountService(IRepository<User> userRepository, IOptions<WebsiteConfiguration> config, IMailer mailer, IAuthentication authentication, ILogger logger, UrlHelper urlHelper = null)
+        public UrlHelper UrlHelper
+        {
+            get => _urlHelper;
+            set => _urlHelper = value;
+        }
+
+        public AccountService(IRepository<User> userRepository, IOptions<WebsiteConfiguration> config, IMailer mailer, IAuthentication authentication, ILogger logger)
         {
             _userRepository = userRepository;
             _mailer = mailer;
             _authentication = authentication;
             _logger = logger;
             _config = config.Value;
-            _urlHelper = urlHelper ?? new UrlHelper(HttpContext.Current.Request.RequestContext);
+            _urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
         }
 
         public ELoginResult Login(string username, string password, bool isRemember)

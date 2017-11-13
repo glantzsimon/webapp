@@ -1,11 +1,9 @@
 ﻿using Moq;
 using System;
 using System.Collections.Specialized;
-using System.IO;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
-using Xunit;
 
 namespace K9.WebApplication.Tests.Shared
 {
@@ -35,12 +33,7 @@ namespace K9.WebApplication.Tests.Shared
 
             var routes = new RouteCollection();
             routes.Add(new Route("test", null));
-
-            HttpContext.Current = new HttpContext(
-                new HttpRequest("", "http://tempuri.org", ""),
-                new HttpResponse(new StringWriter())
-            );
-
+            
             return new UrlHelper(new RequestContext(context.Object, new RouteData()), routes);
         }
         
