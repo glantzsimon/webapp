@@ -19,7 +19,6 @@ namespace K9.Base.WebApplication.Filters
 					if (!string.IsNullOrEmpty(languageCode))
 					{
 						var culture = CultureInfo.GetCultureInfo(languageCode);
-						Thread.CurrentThread.CurrentCulture = culture;
 						Thread.CurrentThread.CurrentUICulture = culture;
 					}
 				}
