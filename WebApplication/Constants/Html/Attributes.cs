@@ -21,7 +21,8 @@ namespace K9.Base.WebApplication.Constants.Html
 		public const string Href = "href";
 		public const string Title = "title";
 		public const string Rows = "row";
-		
+	    public const string DataFormat = "data-format";
+
 	}
 
 }
