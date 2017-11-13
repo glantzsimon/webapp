@@ -4,7 +4,7 @@ using WebMatrix.WebData;
 
 namespace K9.Base.WebApplication.Security
 {
-    class Authentication : IAuthentication
+    public class Authentication : IAuthentication
     {
         public bool ChangePassword(string userName, string currentPassword, string newPassword)
         {
