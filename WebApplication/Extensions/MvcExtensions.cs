@@ -12,8 +12,8 @@ namespace K9.Base.WebApplication.Extensions
 
 		public static string GetActiveClass(this ViewContext viewContext, string actionName, string controllerName)
 		{
-			return viewContext.RouteData.Values["action"].ToString() == actionName &&
-				viewContext.RouteData.Values["controller"].ToString() == controllerName ? "active" : "";
+			return viewContext.RouteData.Values["action"].ToString().ToLower() == actionName.ToLower() &&
+				viewContext.RouteData.Values["controller"].ToString().ToLower() == controllerName.ToLower() ? "active" : "";
 		}
 
 		public static void AddErrorMessageFromException<T>(this ModelStateDictionary modelState, Exception ex, T item) where T : IObjectBase
