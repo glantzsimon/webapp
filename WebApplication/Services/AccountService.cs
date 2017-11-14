@@ -93,24 +93,26 @@ namespace K9.Base.WebApplication.Services
 
             if (!result.Errors.Any())
             {
+                var newUser = new
+                {
+                    model.EmailAddress,
+                    model.FirstName,
+                    model.LastName,
+                    model.PhoneNumber,
+                    model.BirthDate,
+                    Name = Guid.NewGuid(),
+                    IsUnsubscribed = false,
+                    IsSystemStandard = false,
+                    CreatedBy = SystemUser.System,
+                    CreatedOn = DateTime.Now,
+                    LastUpdatedBy = SystemUser.System,
+                    LastUpdatedOn = DateTime.Now
+                };
+
                 try
                 {
                     var token = _authentication.CreateUserAndAccount(model.UserName, model.Password,
-                        new
-                        {
-                            model.EmailAddress,
-                            model.FirstName,
-                            model.LastName,
-                            model.PhoneNumber,
-                            model.BirthDate,
-                            IsUnsubscribed = false,
-                            IsSystemStandard = false,
-                            CreatedBy = SystemUser.System,
-                            CreatedOn = DateTime.Now,
-                            LastUpdatedBy = SystemUser.System,
-                            LastUpdatedOn = DateTime.Now
-                        }, true);
-
+                        newUser, true);
                     SendActivationemail(model, token);
                     result.IsSuccess = true;
                     return result;
@@ -128,7 +130,9 @@ namespace K9.Base.WebApplication.Services
                     result.Errors.Add(new ServiceError
                     {
                         FieldName = "",
-                        ErrorMessage = ex.Message
+                        ErrorMessage = ex.Message,
+                        Exception = ex,
+                        Data = newUser
                     });
                 }
             }
