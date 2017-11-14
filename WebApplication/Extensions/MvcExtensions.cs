@@ -46,12 +46,14 @@ namespace K9.Base.WebApplication.Extensions
 	        {
                 return new ServiceError
                 {
+                    FieldName = "",
                     ErrorMessage = Dictionary.DeleteConflictError
                 };
 	        }
 	        return new ServiceError
 	        {
-	            ErrorMessage = Dictionary.FriendlyErrorMessage
+	            FieldName = "",
+                ErrorMessage = Dictionary.FriendlyErrorMessage
             };
 	    }
 
