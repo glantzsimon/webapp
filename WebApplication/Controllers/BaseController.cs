@@ -585,7 +585,7 @@ namespace K9.Base.WebApplication.Controllers
         {
             if (typeof(T).ImplementsIUserData())
             {
-                var tableName = typeof(User).GetTableName();
+                var tableName = nameof(User);
                 return $" {Dictionary.For.ToLower()} {Repository.GetName(tableName, Authentication.CurrentUserId)}";
             }
             return string.Empty;
