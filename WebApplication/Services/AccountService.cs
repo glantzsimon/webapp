@@ -22,6 +22,7 @@ namespace K9.Base.WebApplication.Services
         private readonly IMailer _mailer;
         private readonly IAuthentication _authentication;
         private readonly ILogger _logger;
+        private readonly IRoles _roles;
         private readonly WebsiteConfiguration _config;
         private UrlHelper _urlHelper;
 
@@ -31,12 +32,13 @@ namespace K9.Base.WebApplication.Services
             set => _urlHelper = value;
         }
 
-        public AccountService(IRepository<User> userRepository, IOptions<WebsiteConfiguration> config, IMailer mailer, IAuthentication authentication, ILogger logger)
+        public AccountService(IRepository<User> userRepository, IOptions<WebsiteConfiguration> config, IMailer mailer, IAuthentication authentication, ILogger logger, IRoles roles)
         {
             _userRepository = userRepository;
             _mailer = mailer;
             _authentication = authentication;
             _logger = logger;
+            _roles = roles;
             _config = config.Value;
             _urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
         }
@@ -114,6 +116,7 @@ namespace K9.Base.WebApplication.Services
                     var token = _authentication.CreateUserAndAccount(model.UserName, model.Password,
                         newUser, true);
                     SendActivationemail(model, token);
+                    _roles.AddUserToRole(model.UserName, RoleNames.DefaultUsers);
                     result.IsSuccess = true;
                     return result;
                 }
