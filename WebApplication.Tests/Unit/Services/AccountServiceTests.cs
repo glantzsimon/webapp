@@ -269,7 +269,7 @@ namespace K9.WebApplication.Tests.Unit.Services
                         Username = model.UserName,
                         EmailAddress = model.EmailAddress,
                         FirstName = "Joe",
-                        Name = "Joe Bloggs"
+                        LastName = "Bloggs"
                     }
                 }.AsQueryable());
             var token = "token";

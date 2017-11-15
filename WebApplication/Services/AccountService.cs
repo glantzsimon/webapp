@@ -381,20 +381,17 @@ namespace K9.Base.WebApplication.Services
                 throw new NullReferenceException("User cannot be null");
             }
 
-            var firstName = user.FirstName;
-            var name = user.Name;
-
             var emailContent = TemplateProcessor.PopulateTemplate(Dictionary.PasswordResetEmail, new
             {
                 Title = Dictionary.Welcome,
-                FirstName = firstName,
+                FirstName = user.FirstName,
                 Company = _config.CompanyName,
                 ResetPasswordLink = resetPasswordLink,
                 ImageUrl = imageUrl,
                 From = Dictionary.ClientServices
             });
 
-            _mailer.SendEmail(Dictionary.PasswordResetTitle, emailContent, model.EmailAddress, name);
+            _mailer.SendEmail(Dictionary.PasswordResetTitle, emailContent, model.EmailAddress, user.FullName);
         }
 
     }
