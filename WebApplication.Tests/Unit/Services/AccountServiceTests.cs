@@ -27,7 +27,8 @@ namespace K9.WebApplication.Tests.Unit.Services
         readonly Mock<IMailer> _mailer = new Mock<IMailer>();
         readonly Mock<IAuthentication> _authentication = new Mock<IAuthentication>();
         readonly Mock<ILogger> _logger = new Mock<ILogger>();
-
+        readonly Mock<IRoles> _roles = new Mock<IRoles>();
+        
         private const string InvalidLogin = "joebloggs";
         private const string LoginLockedOut = "wolf";
         private const string ValidLogin = "simon";
@@ -46,7 +47,7 @@ namespace K9.WebApplication.Tests.Unit.Services
                 new HttpResponse(new StringWriter())
             );
 
-            _service = new AccountService(_userRepository.Object, _config.Object, _mailer.Object, _authentication.Object, _logger.Object);
+            _service = new AccountService(_userRepository.Object, _config.Object, _mailer.Object, _authentication.Object, _logger.Object, _roles.Object);
             _service.UrlHelper = UrlTestHelper.CreaTestHelper();
 
             _authentication.Setup(_ => _.Login(InvalidLogin, It.IsAny<string>(), false))
