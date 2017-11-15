@@ -16,7 +16,7 @@
     <tags>Tag1 Tag2</tags>
   </metadata>
   <files>
-    <file src="bin\$configuration$\fr\*.dll" target="lib\net461\fr" />
 	<file src="bin\$configuration$\*.dll" target="lib\net461" />
+    <file src="bin\$configuration$\fr\*.dll" target="lib\net461\fr" />
   </files>
 </package>
