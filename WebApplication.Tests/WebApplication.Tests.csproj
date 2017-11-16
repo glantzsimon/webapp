@@ -60,8 +60,8 @@
     <Reference Include="K9.Base.DataAccessLayer, Version=1.0.0.73, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.73\lib\net461\K9.Base.DataAccessLayer.dll</HintPath>
     </Reference>
-    <Reference Include="K9.Base.Globalisation, Version=1.0.0.20, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\K9.Base.Globalisation.1.0.0.20\lib\net461\K9.Base.Globalisation.dll</HintPath>
+    <Reference Include="K9.Base.Globalisation, Version=1.0.0.21, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\K9.Base.Globalisation.1.0.0.21\lib\net461\K9.Base.Globalisation.dll</HintPath>
     </Reference>
     <Reference Include="K9.SharedLibrary, Version=1.0.0.52, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\K9.SharedLibrary.20.0.0.52\lib\net461\K9.SharedLibrary.dll</HintPath>

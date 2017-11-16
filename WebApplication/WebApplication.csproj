@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
@@ -45,8 +45,8 @@
     <Reference Include="K9.Base.DataAccessLayer, Version=1.0.0.73, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.73\lib\net461\K9.Base.DataAccessLayer.dll</HintPath>
     </Reference>
-    <Reference Include="K9.Base.Globalisation, Version=1.0.0.20, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.73\lib\net461\K9.Base.Globalisation.dll</HintPath>
+    <Reference Include="K9.Base.Globalisation, Version=1.0.0.21, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\K9.Base.Globalisation.1.0.0.21\lib\net461\K9.Base.Globalisation.dll</HintPath>
     </Reference>
     <Reference Include="K9.SharedLibrary, Version=1.0.0.54, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.73\lib\net461\K9.SharedLibrary.dll</HintPath>
