@@ -1,4 +1,4 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
+<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -57,8 +57,8 @@
     <Reference Include="FoolproofValidation, Version=0.9.5851.39121, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\Foolproof.0.9.4518\lib\net45\FoolproofValidation.dll</HintPath>
     </Reference>
-    <Reference Include="K9.Base.DataAccessLayer, Version=1.0.0.48, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.48\lib\net461\K9.Base.DataAccessLayer.dll</HintPath>
+    <Reference Include="K9.Base.DataAccessLayer, Version=1.0.0.73, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\packages\K9.Base.DataAccessLayer.1.0.0.73\lib\net461\K9.Base.DataAccessLayer.dll</HintPath>
     </Reference>
     <Reference Include="K9.Base.Globalisation, Version=1.0.0.20, Culture=neutral, processorArchitecture=MSIL">
       <HintPath>..\packages\K9.Base.Globalisation.1.0.0.20\lib\net461\K9.Base.Globalisation.dll</HintPath>
