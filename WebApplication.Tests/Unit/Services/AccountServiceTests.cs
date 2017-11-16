@@ -261,16 +261,18 @@ namespace K9.WebApplication.Tests.Unit.Services
                 EmailAddress = "jloggs@test.com",
                 UserName = "jbloggs"
             };
+            var item = new User
+            {
+                Username = model.UserName,
+                EmailAddress = model.EmailAddress,
+                FirstName = "Joe",
+                LastName = "Bloggs",
+                FullName = "Joe Bloggs"
+            };
             _userRepository.Setup(_ => _.Find(It.IsAny<Expression<Func<User, bool>>>()))
                 .Returns(new List<User>
                 {
-                    new User
-                    {
-                        Username = model.UserName,
-                        EmailAddress = model.EmailAddress,
-                        FirstName = "Joe",
-                        LastName = "Bloggs"
-                    }
+                    item
                 }.AsQueryable());
             var token = "token";
             _authentication.Setup(_ => _.GeneratePasswordResetToken(model.UserName, It.IsAny<int>()))
@@ -325,16 +327,18 @@ namespace K9.WebApplication.Tests.Unit.Services
         [Fact]
         public void ActivateAccount_Success()
         {
+            var item = new User
+            {
+                Username = "jbloggs",
+                EmailAddress = "jbloggs@test.com",
+                FirstName = "Joe",
+                Name = "Joe Bloggs"
+            };
+            item.Validated();
             _userRepository.Setup(_ => _.Find(It.IsAny<Expression<Func<User, bool>>>()))
                 .Returns(new List<User>
                 {
-                    new User
-                    {
-                        Username = "jbloggs",
-                        EmailAddress = "jbloggs@test.com",
-                        FirstName = "Joe",
-                        Name = "Joe Bloggs"
-                    }
+                    item
                 }.AsQueryable());
             _authentication.Setup(_ => _.ConfirmAccount(It.IsAny<string>(), It.IsAny<string>()))
                 .Returns(true);
