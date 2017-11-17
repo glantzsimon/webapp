@@ -603,7 +603,7 @@ namespace K9.Base.WebApplication.Controllers
 
         private string GetFilterByUserIdWhereClause()
         {
-            return FilterDataByUserId() ? $" WHERE [UserId] = {Authentication.CurrentUserId} AND IsDeleted = 0" : " WHERE [IsDeleted] = 0";
+            return FilterDataByUserId() ? $" WHERE [UserId] = {Authentication.CurrentUserId}" : "";
         }
 
         private bool IsCurrentUserPermittedToViewOtherUsersData(IObjectBase item)

@@ -64,8 +64,9 @@ namespace K9.WebApplication.Tests.Unit.Helpers
 							"(ORDER BY [Country].[ThreeLetterCountryCode] ASC) AS RowNum " +
 							"FROM [Country] " +
 							"WHERE ([Country].[TwoLetterCountryCode] LIKE '%[search]%' " +
-							"OR [Country].[ThreeLetterCountryCode] LIKE '%[search]%')) " +
-							"SELECT * FROM RESULTS " +
+							"OR [Country].[ThreeLetterCountryCode] LIKE '%[search]%') " +
+			                "AND [Country].[IsDeleted] = 0) " +
+                            "SELECT * FROM RESULTS " +
 							"WHERE RowNum BETWEEN 0 AND 10", helper.GetQuery());
 		}
 
@@ -103,8 +104,9 @@ namespace K9.WebApplication.Tests.Unit.Helpers
 							"(ORDER BY [Country].[ThreeLetterCountryCode] DESC) AS RowNum " +
 							"FROM [Country] " +
 							"WHERE ([Country].[TwoLetterCountryCode] LIKE '%[gb]%' " +
-							"OR [Country].[ThreeLetterCountryCode] LIKE '%gb%')) " +
-							"SELECT * FROM RESULTS " +
+							"OR [Country].[ThreeLetterCountryCode] LIKE '%gb%') " +
+			                "AND [Country].[IsDeleted] = 0) " +
+                            "SELECT * FROM RESULTS " +
 							"WHERE RowNum BETWEEN 40 AND 60", helper.GetQuery());
 		}
 
@@ -132,8 +134,9 @@ namespace K9.WebApplication.Tests.Unit.Helpers
 			Assert.Equal("WITH RESULTS AS " +
 							"(SELECT [Country].[TwoLetterCountryCode], ROW_NUMBER() OVER " +
 							"(ORDER BY [Country].[TwoLetterCountryCode] ASC) AS RowNum " +
-							"FROM [Country] ) " +
-							"SELECT * FROM RESULTS " +
+							"FROM [Country] " +
+			                "WHERE [Country].[IsDeleted] = 0) " +
+                            "SELECT * FROM RESULTS " +
 							"WHERE RowNum BETWEEN 0 AND 10", helper.GetQuery());
 		}
 
@@ -161,8 +164,9 @@ namespace K9.WebApplication.Tests.Unit.Helpers
 			Assert.Equal("WITH RESULTS AS " +
 							"(SELECT [Country].*, ROW_NUMBER() OVER " +
 							"(ORDER BY [Country].[TwoLetterCountryCode] ASC) AS RowNum " +
-							"FROM [Country] ) " +
-							"SELECT * FROM RESULTS " +
+							"FROM [Country] " +
+			                "WHERE [Country].[IsDeleted] = 0) " +
+                            "SELECT * FROM RESULTS " +
 							"WHERE RowNum BETWEEN 0 AND 10", helper.GetQuery(true));
 		}
         
@@ -206,14 +210,15 @@ namespace K9.WebApplication.Tests.Unit.Helpers
 
 			Assert.Equal("WITH RESULTS AS " +
 							"(SELECT [UserRole].*, " +
-							"[User].[Name] AS [UserName], " +
-							"[Role].[Name] AS [RoleName], " +
+							"[User].[Username] AS [UserName], " +
+							"[Role].[Description] AS [RoleName], " +
 							"ROW_NUMBER() OVER " +
                             "(ORDER BY [UserRole].[Id] ASC) AS RowNum " +
                             "FROM [UserRole] " +
                             "JOIN [User] AS [User] ON [User].[Id] = [UserRole].[UserId] " +
-							"JOIN [Role] AS [Role] ON [Role].[Id] = [UserRole].[RoleId] ) " +
-							"SELECT * FROM RESULTS " +
+							"JOIN [Role] AS [Role] ON [Role].[Id] = [UserRole].[RoleId] " +
+			                "WHERE [UserRole].[IsDeleted] = 0) " +
+                            "SELECT * FROM RESULTS " +
 							"WHERE RowNum BETWEEN 0 AND 10", helper.GetQuery(true));
 		}
 
@@ -275,16 +280,17 @@ namespace K9.WebApplication.Tests.Unit.Helpers
 
 			Assert.Equal("WITH RESULTS AS " +
 			                "(SELECT [Message].*, " +
-			                "[User].[Name] AS [SentToUserName], " +
-			                "[User1].[Name] AS [SentByUserName], " +
-			                "[User2].[Name] AS [UserName], " +
+			                "[User].[FullName] AS [SentToUserName], " +
+                            "[User1].[FullName] AS [SentByUserName], " +
+                            "[User2].[FullName] AS [UserName], " +
 			                "ROW_NUMBER() OVER (ORDER BY [Message].[Id] ASC) AS RowNum " +
 			                "FROM [Message] " +
 			                "JOIN [User] AS [User] ON [User].[Id] = [Message].[SentToUserId] " +
 			                "JOIN [User] AS [User1] ON [User1].[Id] = [Message].[SentByUserId] " +
 			                "JOIN [User] AS [User2] ON [User2].[Id] = [Message].[UserId] " +
-			                "WHERE [Message].[UserId] = 4) " +
-			                "SELECT * FROM RESULTS WHERE RowNum BETWEEN 0 AND 10", helper.GetQuery(true, 4));
+			                "WHERE [Message].[UserId] = 4 " +
+			                "AND [Message].[IsDeleted] = 0) " +
+                            "SELECT * FROM RESULTS WHERE RowNum BETWEEN 0 AND 10", helper.GetQuery(true, 4));
 		}
 
 	}

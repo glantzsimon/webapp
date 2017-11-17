@@ -153,7 +153,7 @@ namespace K9.Base.WebApplication.Helpers
 			}
 
 		    sb.Append(sb.Length == 0 ? "WHERE " : " AND ");
-		    sb.Append("[IsDeleted] = 0");
+		    sb.Append($"[{parentType.Name}].[IsDeleted] = 0");
 
             return sb.ToString();
 		}
