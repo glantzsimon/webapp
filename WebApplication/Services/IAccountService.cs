@@ -9,7 +9,8 @@ namespace K9.Base.WebApplication.Services
 		ELoginResult Login(string username, string password, bool isRemember);
 		void Logout();
 		ServiceResult Register(UserAccount.RegisterModel model);
-		ServiceResult UpdatePassword(UserAccount.LocalPasswordModel model);
+        ServiceResult DeleteAccount(int userId);
+        ServiceResult UpdatePassword(UserAccount.LocalPasswordModel model);
 		ServiceResult PasswordResetRequest(UserAccount.PasswordResetRequestModel model);
 		bool ConfirmUserFromToken(string username, string token);
 		ServiceResult ResetPassword(UserAccount.ResetPasswordModel model);

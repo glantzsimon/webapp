@@ -85,7 +85,7 @@ namespace K9.Base.WebApplication.DataSets
 	    private List<ListItem> GetItemList<T>(string nameExpression) where T : class, IObjectBase
 	    {
 	        IRepository<T> repo = new BaseRepository<T>(_db);
-            return repo.CustomQuery<ListItem>($"SELECT [Id], {nameExpression} AS [Name] FROM [{typeof(T).Name}] ORDER BY [Name]");
+            return repo.CustomQuery<ListItem>($"SELECT [Id], {nameExpression} AS [Name] FROM [{typeof(T).Name}] WHERE [IsDeleted] = 0 ORDER BY [Name]");
         }
 	}
 

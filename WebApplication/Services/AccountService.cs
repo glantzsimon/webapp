@@ -103,6 +103,7 @@ namespace K9.Base.WebApplication.Services
                     model.PhoneNumber,
                     model.BirthDate,
                     Name = Guid.NewGuid(),
+                    FullName = $"{model.FirstName} {model.LastName}",
                     IsUnsubscribed = false,
                     IsSystemStandard = false,
                     CreatedBy = SystemUser.System,
@@ -136,6 +137,44 @@ namespace K9.Base.WebApplication.Services
                         ErrorMessage = ex.Message,
                         Exception = ex,
                         Data = newUser
+                    });
+                }
+            }
+
+            return result;
+        }
+
+        public ServiceResult DeleteAccount(int userId)
+        {
+            var result = new ServiceResult();
+            var user = _userRepository.Find(userId);
+
+            if (user == null || _authentication.CurrentUserName != user.Username)
+            {
+                result.Errors.Add(new ServiceError
+                {
+                    FieldName = "Username",
+                    ErrorMessage = Dictionary.UserNotFoundError
+                });
+            }
+
+            if (!result.Errors.Any())
+            {
+                try
+                {
+                    user.SetToDeleted();
+                    _userRepository.Update(user);
+                    result.IsSuccess = true;
+                    return result;
+                }
+                catch (Exception ex)
+                {
+                    result.Errors.Add(new ServiceError
+                    {
+                        FieldName = "",
+                        ErrorMessage = ex.Message,
+                        Exception = ex,
+                        Data = user
                     });
                 }
             }

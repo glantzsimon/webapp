@@ -459,6 +459,83 @@ namespace K9.WebApplication.Tests.Unit.Services
                 });
             Assert.Equal(token, _service.GetAccountActivationToken(3));
         }
+
+        [Fact]
+        public void DeleteAccount_UsserNotFound()
+        {
+            var result = _service.DeleteAccount(7);
+
+            Assert.Contains(Dictionary.UserNotFoundError, result.Errors.Select(_ => _.ErrorMessage));
+            Assert.False(result.IsSuccess);
+        }
+
+        [Fact]
+        public void DeleteAccount_UsserNotLoggedIn()
+        {
+            _userRepository.Setup(_ => _.Find(It.IsAny<int>()))
+                .Returns(new User
+                {
+                    Username = "jbloggs",
+                    EmailAddress = "jbloggs@test.com",
+                    FirstName = "Joe",
+                    Name = "Joe Bloggs"
+                });
+                
+            _authentication.Setup(_ => _.CurrentUserName)
+                .Returns("simon");
+            var result = _service.DeleteAccount(7);
+
+            Assert.Contains(Dictionary.UserNotFoundError, result.Errors.Select(_ => _.ErrorMessage));
+            Assert.False(result.IsSuccess);
+        }
+
+        [Fact]
+        public void DeleteAccount_RepoThrowError()
+        {
+            _userRepository.Setup(_ => _.Find(It.IsAny<int>()))
+                .Returns(new User
+                {
+                    Username = "jbloggs",
+                    EmailAddress = "jbloggs@test.com",
+                    FirstName = "Joe",
+                    Name = "Joe Bloggs"
+                });
+            _authentication.Setup(_ => _.CurrentUserName)
+                .Returns("jbloggs");
+            _userRepository.Setup(_ => _.Update(It.IsAny<User>()))
+                .Throws(new Exception("oops"));
+            var result = _service.DeleteAccount(7);
+
+            Assert.Contains("oops", result.Errors.Select(_ => _.ErrorMessage));
+            Assert.False(result.IsSuccess);
+        }
+
+        [Fact]
+        public void DeleteAccount_Success()
+        {
+            User actualUser = null;
+            var user = new User
+            {
+                Username = "jbloggs",
+                EmailAddress = "jbloggs@test.com",
+                FirstName = "Joe",
+                LastName = "Bloggs",
+                Name = "Joe Bloggs"
+            };  
+            _userRepository.Setup(_ => _.Find(It.IsAny<int>()))
+                .Returns(user);
+            _authentication.Setup(_ => _.CurrentUserName)
+                .Returns("jbloggs");
+            _userRepository.Setup(_ => _.Update(It.IsAny<User>()))
+                .Callback<User>(u => actualUser = u);
+
+            var result = _service.DeleteAccount(7);
+
+            Assert.True(result.IsSuccess);
+            Assert.Contains("@deleted.user", actualUser.EmailAddress);
+            Assert.NotEqual("jbloggs", actualUser.Username);
+            _userRepository.Verify(_ => _.Update(It.IsAny<User>()), Times.Once);
+        }
     }
 
 }
