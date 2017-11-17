@@ -1,10 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using K9.Base.DataAccessLayer.Config;
+﻿using K9.Base.DataAccessLayer.Config;
 using K9.Base.DataAccessLayer.Models;
 using K9.Base.WebApplication.Exceptions;
 using K9.Base.WebApplication.Options;
+using System;
+using System.Collections.Generic;
+using System.Linq;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit
@@ -22,7 +22,7 @@ namespace K9.WebApplication.Tests.Unit
 
 			var propertyInfos = options.GetColumns();
 
-			Assert.Equal(6, propertyInfos.Count);
+			Assert.Equal(7, propertyInfos.Count);
 			Assert.Equal("TwoLetterCountryCode", propertyInfos.First().Name);
 		}
 
@@ -42,7 +42,7 @@ namespace K9.WebApplication.Tests.Unit
 
 			var propertyInfos = options.GetColumns();
 
-			Assert.Equal(6, propertyInfos.Count);
+			Assert.Equal(7, propertyInfos.Count);
 			Assert.Equal("ThreeLetterCountryCode", propertyInfos.First().Name);
 			Assert.Equal("Id", propertyInfos[1].Name);
 			Assert.Equal("TwoLetterCountryCode", propertyInfos[2].Name);

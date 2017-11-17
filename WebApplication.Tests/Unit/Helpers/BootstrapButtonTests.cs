@@ -1,12 +1,12 @@
 ﻿using K9.Base.DataAccessLayer.Models;
 using K9.Base.WebApplication.Enums;
 using K9.Base.WebApplication.Helpers;
-using K9.SharedLibrary.Helpers;
+using K9.WebApplication.Tests.Shared;
 using Xunit;
 
 namespace K9.WebApplication.Tests.Unit.Helpers
 {
-	public class BootstrapButtonTests
+    public class BootstrapButtonTests
 	{
 
 		[Fact]

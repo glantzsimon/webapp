@@ -1,6 +1,6 @@
 ﻿using K9.Base.DataAccessLayer.Models;
+using K9.WebApplication.Tests.Shared;
 using Xunit;
-using HtmlHelper = K9.SharedLibrary.Helpers.HtmlHelper;
 
 namespace K9.WebApplication.Tests.Unit.Helpers
 {
