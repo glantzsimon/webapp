@@ -152,7 +152,10 @@ namespace K9.Base.WebApplication.Helpers
 				sb.AppendFormat("[{0}].[{1}] = {2}", parentType.Name, StatelessFilter.Key, StatelessFilter.Id);
 			}
 
-			return sb.ToString();
+		    sb.Append(sb.Length == 0 ? "WHERE " : " AND ");
+		    sb.Append("[IsDeleted] = 0");
+
+            return sb.ToString();
 		}
 
 		private static PropertyInfo[] _propertyInfos;
@@ -204,7 +207,7 @@ namespace K9.Base.WebApplication.Helpers
 			foreach (var item in GetLinkedTableInfos())
 			{
 				sb.Append(", ");
-				sb.AppendFormat("[{0}].[Name] AS [{1}]", item.LinkedTableAlias, item.ColumnName);
+				sb.AppendFormat("[{0}].[{1}] AS [{2}]", item.LinkedTableAlias, item.LinkedTableColumnName, item.ColumnName);
 			}
 
 			return sb.ToString();
