@@ -1,17 +1,16 @@
-﻿using System;
+﻿using K9.Base.DataAccessLayer.Extensions;
+using K9.Base.DataAccessLayer.Respositories;
+using K9.SharedLibrary.Models;
+using System;
 using System.Collections.Generic;
 using System.Data.Entity;
 using System.Linq;
 using System.Web.Mvc;
-using K9.Base.DataAccessLayer.Extensions;
-using K9.Base.DataAccessLayer.Respositories;
-using K9.SharedLibrary.Extensions;
-using K9.SharedLibrary.Models;
 
 namespace K9.Base.WebApplication.DataSets
 {
 
-	public class DataSetsHelper : IDataSetsHelper
+    public class DataSetsHelper : IDataSetsHelper
 	{
 		private readonly DbContext _db;
 		private readonly IDataSets _datasets;
@@ -76,13 +75,11 @@ namespace K9.Base.WebApplication.DataSets
 				return string.Empty;
 			}
 
-			var item = GetDataSet<T>(refresh, nameExpression).FirstOrDefault(x => x.Id == selectedId.Value);
-			if (item != null)
-				return item.Name;
-			return string.Empty;
+		    IRepository<T> repo = new BaseRepository<T>(_db);
+		    return repo.GetName(typeof(T).Name, selectedId.Value);
 		}
 
-	    private List<ListItem> GetItemList<T>(string nameExpression) where T : class, IObjectBase
+	    private List<ListItem> GetItemList<T>(string nameExpression, bool includeDeleted = false) where T : class, IObjectBase
 	    {
 	        IRepository<T> repo = new BaseRepository<T>(_db);
             return repo.CustomQuery<ListItem>($"SELECT [Id], {nameExpression} AS [Name] FROM [{typeof(T).Name}] WHERE [IsDeleted] = 0 ORDER BY [Name]");

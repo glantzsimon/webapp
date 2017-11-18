@@ -17,13 +17,13 @@ namespace K9.Base.WebApplication.Helpers
 
             if ((roles.CurrentUserIsInRoles(RoleNames.Administrators) || roles.CurrentUserHasPermissions<T>(Permissions.Edit)) && !model.IsSystemStandard)
             {
-                sb.AppendLine(html.BootstrapLinkToEditButton(model.Id).ToString());
+                sb.Append(html.BootstrapLinkToEditButton(model.Id).ToString());
             }
 
             var noDelete = (typeof(T).HasAttribute(typeof(SoftDeleteAttribute))) && model.IsDeleted;
             if ((roles.CurrentUserIsInRoles(RoleNames.Administrators) || roles.CurrentUserHasPermissions<T>(Permissions.Delete)) && !model.IsSystemStandard && !noDelete)
             {
-                sb.AppendLine(html.BootstrapLinkToDeleteButton(model.Id).ToString());
+                sb.Append(html.BootstrapLinkToDeleteButton(model.Id).ToString());
             }
             return MvcHtmlString.Create(sb.ToString());
         }
