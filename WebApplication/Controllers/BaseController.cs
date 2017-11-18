@@ -38,6 +38,18 @@ namespace K9.Base.WebApplication.Controllers
             Roles = roles;
             Authentication = authentication;
         }
+
+        public ActionResult HttpForbidden()
+        {
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            return View("Unauthorized");
+        }
+
+        public new ActionResult HttpNotFound()
+        {
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return View("NotFound");
+        }
     }
 
     public abstract class BaseController<T> : Controller, IBaseController where T : class, IObjectBase
@@ -557,19 +569,7 @@ namespace K9.Base.WebApplication.Controllers
         {
             ViewBag.Title = typeof(T).GetPluralName();
         }
-
-        public ActionResult HttpForbidden()
-        {
-            HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
-            return View("Unauthorized");
-        }
-
-        public new ActionResult HttpNotFound()
-        {
-            HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
-            return View("NotFound");
-        }
-
+        
         private string GetStatelessFilterTitle()
         {
             var statelessFilter = this.GetStatelessFilter();
@@ -668,6 +668,18 @@ namespace K9.Base.WebApplication.Controllers
                 return GetIUserDataFilterTitle();
             }
             return string.Empty;
+        }
+
+        public ActionResult HttpForbidden()
+        {
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.Forbidden;
+            return View("Unauthorized");
+        }
+
+        public new ActionResult HttpNotFound()
+        {
+            HttpContext.Response.StatusCode = (int)HttpStatusCode.NotFound;
+            return View("NotFound");
         }
 
         #endregion

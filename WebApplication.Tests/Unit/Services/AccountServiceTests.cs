@@ -535,6 +535,8 @@ namespace K9.WebApplication.Tests.Unit.Services
             Assert.Contains("@deleted.user", actualUser.EmailAddress);
             Assert.NotEqual("jbloggs", actualUser.Username);
             _userRepository.Verify(_ => _.Update(It.IsAny<User>()), Times.Once);
+            _userRepository.Verify(_ => _.Delete(It.IsAny<User>()), Times.Once);
+            _authentication.Verify(_ => _.Logout(), Times.Once);
         }
     }
 

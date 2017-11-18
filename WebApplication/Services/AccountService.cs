@@ -162,8 +162,10 @@ namespace K9.Base.WebApplication.Services
             {
                 try
                 {
+                    _authentication.Logout();
                     user.SetToDeleted();
                     _userRepository.Update(user);
+                    _userRepository.Delete(user);
                     result.IsSuccess = true;
                     return result;
                 }
