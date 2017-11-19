@@ -5,7 +5,7 @@ using System.Web.Mvc;
 
 namespace K9.Base.WebApplication.Filters
 {
-	public class CultureAttribute : ActionFilterAttribute
+    public class CultureAttribute : ActionFilterAttribute
 	{
 		
 		public override void OnActionExecuting(ActionExecutingContext filterContext)

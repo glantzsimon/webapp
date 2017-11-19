@@ -12,7 +12,8 @@ namespace K9.Base.WebApplication.ViewModels
 		public int ParentId { get; set; }
 		public string ParentTypeName { get; set; }
 		public string ParentDescription { get; set; }
-		public List<MultiSelectItem> Items { get; set; }
+	    public bool IsSystemStandard { get; set; }
+        public List<MultiSelectItem> Items { get; set; }
 
 		public string GetSubTitle()
 		{
@@ -29,6 +30,7 @@ namespace K9.Base.WebApplication.ViewModels
 				ParentId = parent.Id,
 				ParentTypeName = typeof(T2).GetName(),
 				ParentDescription = parent.Description,
+                IsSystemStandard = parent.IsSystemStandard,
 				Items = items.Select(item =>
 				{
 					var child = item.GetProperty(typeof (T3).Name) as T3;

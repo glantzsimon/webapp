@@ -363,7 +363,7 @@ namespace K9.Base.WebApplication.Services
                 Company = _config.CompanyName,
                 ActivationLink = activationLink,
                 ImageUrl = imageUrl,
-                From = Dictionary.ClientServices
+                From = _config.CompanyName
             });
 
             _mailer.SendEmail(Dictionary.AccountActivationTitle, emailContent, model.EmailAddress, model.GetFullName());
@@ -429,7 +429,7 @@ namespace K9.Base.WebApplication.Services
                 Company = _config.CompanyName,
                 ResetPasswordLink = resetPasswordLink,
                 ImageUrl = imageUrl,
-                From = Dictionary.ClientServices
+                From = _config.CompanyName
             });
 
             _mailer.SendEmail(Dictionary.PasswordResetTitle, emailContent, model.EmailAddress, user.FullName);

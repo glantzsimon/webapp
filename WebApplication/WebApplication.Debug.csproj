@@ -156,6 +156,7 @@
     <Compile Include="Constants\Html\Tags.cs" />
     <Compile Include="Constants\Html\Types.cs" />
     <Compile Include="Constants\SiteConstants.cs" />
+    <Compile Include="Constants\ViewDataConstants.cs" />
     <Compile Include="Constants\StringConstants.cs" />
     <Compile Include="Controllers\BaseController.cs" />
     <Compile Include="DataSets\DataSets.cs" />
