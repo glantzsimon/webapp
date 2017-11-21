@@ -219,6 +219,21 @@ namespace K9.WebApplication.Tests.Unit.Controllers
         [Fact]
         public void Details_HappyPath()
         {
+            var fileSource = new FileSource
+            {
+                PostedFile = new List<HttpPostedFileBase>
+                {
+                    new Mock<HttpPostedFileBase>().Object
+                }
+            };
+            var person = new Person
+            {
+                Id = ValidId,
+                Name = "John",
+                Photos = fileSource
+            };
+            _repository.Setup(_ => _.Find(ValidId))
+                .Returns(person);
             var view = Assert.IsType<ViewResult>(_personController.Details(ValidId));
 
             Assert.Equal("Persons", _personController.ViewBag.Title);
@@ -230,6 +245,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal("Index", crumb.ActionName);
             Assert.Equal("Persons", crumb.ControllerName);
             Assert.Equal(ValidId, ((Person)view.Model).Id);
+            _fileSourceHelper.Verify(_ => _.LoadFiles(It.IsAny<FileSource>(), false), Times.Once);
         }
 
         [Fact]
@@ -900,6 +916,7 @@ namespace K9.WebApplication.Tests.Unit.Controllers
             Assert.Equal("Index", redirectResult.RouteValues["action"]);
 
             _limitedRepository.Verify(_ => _.Delete(ValidId), Times.Once);
+            _fileSourceHelper.Verify(_ => _.DeleteFilesFromDisk(It.IsAny<FileSource>()), Times.Once);
         }
         
     }

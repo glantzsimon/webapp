@@ -167,6 +167,8 @@ namespace K9.Base.WebApplication.Controllers
             var type = typeof(T);
             ViewBag.SubTitle = string.Format(Dictionary.DetailsText, type.GetName(), type.GetOfPreposition().ToLower());
 
+            LoadUploadedFiles(item, true);
+
             AddControllerBreadcrumb();
 
             return View(item);
@@ -460,6 +462,8 @@ namespace K9.Base.WebApplication.Controllers
 
                 Repository.Delete(id);
 
+                DeleteUploadedFiles(item);
+
                 RecordDeleted?.Invoke(this, new CrudEventArgs
                 {
                     Item = item
@@ -647,12 +651,22 @@ namespace K9.Base.WebApplication.Controllers
             }
         }
 
-        private void LoadUploadedFiles(T item)
+        private void LoadUploadedFiles(T item, bool isReadOnly = false)
         {
             foreach (var fileSourcePropertyInfo in item.GetFileSourceProperties())
             {
                 var fileSource = item.GetProperty(fileSourcePropertyInfo) as FileSource;
                 FileSourceHelper.LoadFiles(fileSource, false);
+                fileSource.IsReadOnly = isReadOnly;
+            }
+        }
+
+        private void DeleteUploadedFiles(T item)
+        {
+            foreach (var fileSourcePropertyInfo in item.GetFileSourceProperties())
+            {
+                var fileSource = item.GetProperty(fileSourcePropertyInfo) as FileSource;
+                FileSourceHelper.DeleteFilesFromDisk(fileSource);
             }
         }
 
